@@ -11,7 +11,7 @@ export function Logo({ to = '/', dark = false, className = '' }: LogoProps) {
     <span className={`inline-flex items-center gap-2.5 ${className}`}>
       <span
         className={`grid size-9 place-items-center rounded-[10px] font-[family-name:var(--font-display)] text-lg font-800 ${
-          dark ? 'bg-white text-ink' : 'bg-ink text-white'
+          dark ? 'bg-white text-black' : 'bg-ink text-white'
         }`}
         style={{ fontWeight: 800 }}
       >

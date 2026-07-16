@@ -141,7 +141,7 @@ export function ApplicationsPage() {
             type="button"
             onClick={() => setTab(t)}
             className={`rounded-full px-4 py-1.5 text-xs font-bold capitalize transition ${
-              tab === t ? 'bg-white text-ink' : 'border border-white/15 text-white/60 hover:border-white/30'
+              tab === t ? 'bg-white text-black' : 'border border-white/15 text-white/60 hover:border-white/30'
             }`}
           >
             {t}

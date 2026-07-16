@@ -129,7 +129,7 @@ export function EmployerJobsPage() {
             <div className="mt-4 flex flex-wrap gap-2">
               <Link
                 to={`/app/jobs/${job.id}/applications`}
-                className="rounded-full bg-white px-4 py-2 text-xs font-bold text-ink transition hover:scale-[1.02]"
+                className="rounded-full bg-white px-4 py-2 text-xs font-bold text-black transition hover:scale-[1.02]"
               >
                 Applications
               </Link>

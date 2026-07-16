@@ -86,7 +86,7 @@ function AppShell() {
                 className={({ isActive }) =>
                   `app-nav-item rounded-full px-3.5 py-1.5 text-sm font-medium transition duration-300 ${
                     isActive
-                      ? 'bg-white text-ink shadow-[0_8px_24px_-12px_rgba(255,255,255,0.5)]'
+                      ? 'bg-white text-black shadow-[0_8px_24px_-12px_rgba(255,255,255,0.5)]'
                       : 'text-white/60 hover:-translate-y-0.5 hover:text-white'
                   }`
                 }
@@ -125,7 +125,7 @@ function AppShell() {
               end={l.end}
               className={({ isActive }) =>
                 `shrink-0 rounded-full px-3 py-1.5 text-xs font-medium ${
-                  isActive ? 'bg-white text-ink' : 'text-white/60'
+                  isActive ? 'bg-white text-black' : 'text-white/60'
                 }`
               }
             >

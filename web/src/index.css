@@ -83,3 +83,9 @@ select {
   color: #fafafa;
   min-height: 100vh;
 }
+
+/* White active pills: dark shell inherits light text, so force black labels */
+.app-shell :where(a, button, span).bg-white,
+.app-shell :where(a, button).bg-white {
+  color: #0a0a0a !important;
+}

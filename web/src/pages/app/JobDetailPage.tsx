@@ -144,7 +144,7 @@ export function JobDetailPage() {
       {isOwner && (
         <Link
           to={`/app/jobs/${job.id}/applications`}
-          className="mt-8 inline-flex rounded-full bg-white px-5 py-2.5 text-sm font-bold text-ink"
+          className="mt-8 inline-flex rounded-full bg-white px-5 py-2.5 text-sm font-bold text-black"
         >
           View applications
         </Link>
