@@ -76,7 +76,10 @@ select {
 }
 
 .app-shell {
-  background: #050508;
+  background:
+    radial-gradient(ellipse 60% 40% at 10% 0%, rgba(30, 79, 215, 0.18), transparent 55%),
+    radial-gradient(ellipse 50% 35% at 90% 20%, rgba(30, 79, 215, 0.1), transparent 50%),
+    #050508;
   color: #fafafa;
   min-height: 100vh;
 }

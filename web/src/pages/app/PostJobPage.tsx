@@ -4,9 +4,12 @@ import { BUDGET_TYPES, EXPERIENCE_LEVELS, JOB_CATEGORIES } from '../../lib/const
 import { useAuth } from '../../lib/auth'
 import { supabase } from '../../lib/supabase'
 import { validatePositiveNumber, validateRequired } from '../../lib/validation'
+import { GlassCard, PageHero } from '../../components/AppUi'
+import { useToast } from '../../components/Toast'
 
 export function PostJobPage() {
   const { user, profile } = useAuth()
+  const toast = useToast()
   const navigate = useNavigate()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -113,29 +116,30 @@ export function PostJobPage() {
         .single()
 
       if (insertErr) throw insertErr
+      toast.success('Job published', 'Workers nearby can see it now.')
       navigate(`/app/jobs/${data.id}/applications`)
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err))
+      const msg = err instanceof Error ? err.message : String(err)
+      setError(msg)
+      toast.error('Could not post', msg)
     } finally {
       setBusy(false)
     }
   }
 
   return (
-    <div className="max-w-xl">
+    <div className="mx-auto max-w-3xl">
       <Link to="/app" className="text-sm text-white/45 hover:text-white">
         ← My Jobs
       </Link>
-      <h1
-        className="mt-4 font-[family-name:var(--font-display)] text-3xl tracking-tight"
-        style={{ fontWeight: 800 }}
-      >
-        Post a Job
-      </h1>
-      <p className="mt-2 text-sm text-white/50">Goes live immediately for workers nearby.</p>
+      <PageHero
+        brush="Hiring"
+        title="Post a Job"
+        subtitle="Goes live immediately for workers nearby."
+      />
 
       {!setupReady && (
-        <div className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+        <div className="mb-4 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
           Complete employer setup on{' '}
           <Link to="/app/profile" className="underline">
             Profile
@@ -144,7 +148,8 @@ export function PostJobPage() {
         </div>
       )}
 
-      <form onSubmit={onSubmit} className="mt-8 space-y-4" noValidate>
+      <GlassCard hover={false} className="!p-6 md:!p-8">
+      <form onSubmit={onSubmit} className="grid gap-4 lg:grid-cols-2" noValidate>
         <Field
           label="Title"
           value={title}
@@ -153,7 +158,7 @@ export function PostJobPage() {
           placeholder="e.g. Need a painter for 2 days"
           hint="At least 3 characters"
         />
-        <label className="block">
+        <label className="block lg:col-span-2">
           <span className="mb-1.5 block text-sm text-white/60">Description</span>
           <textarea
             value={description}
@@ -161,7 +166,7 @@ export function PostJobPage() {
             rows={5}
             required
             placeholder="Describe the work, timing, and what’s included…"
-            className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 outline-none placeholder:text-white/25 focus:ring-2 focus:ring-[#1e4fd7]/50"
+            className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 outline-none placeholder:text-white/25 focus:ring-2 focus:ring-paint/30"
           />
           <span className="mt-1.5 block text-xs text-white/35">At least 20 characters</span>
         </label>
@@ -243,15 +248,16 @@ export function PostJobPage() {
           />
           <span className="mt-1.5 block text-xs text-white/35">Images only, under 8 MB each</span>
         </label>
-        {error && <p className="text-sm text-red-400">{error}</p>}
+        {error && <p className="text-sm text-red-400 lg:col-span-2">{error}</p>}
         <button
           type="submit"
           disabled={busy}
-          className="rounded-full bg-[#1e4fd7] px-6 py-3 text-sm font-semibold disabled:opacity-50"
+          className="rounded-full bg-paint px-6 py-3 text-sm font-bold text-white shadow-[0_16px_40px_-18px_rgba(30,79,215,0.85)] transition hover:brightness-110 disabled:opacity-50 lg:col-span-2 lg:justify-self-start"
         >
           {busy ? 'Posting…' : 'Publish job'}
         </button>
       </form>
+      </GlassCard>
     </div>
   )
 }

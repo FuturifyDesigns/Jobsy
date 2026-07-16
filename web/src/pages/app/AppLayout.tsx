@@ -1,14 +1,46 @@
+import { useRef } from 'react'
 import { NavLink, Outlet, Navigate, Link } from 'react-router-dom'
+import gsap from 'gsap'
+import { useGSAP } from '@gsap/react'
 import { useAuth } from '../../lib/auth'
 import { Logo } from '../../components/Logo'
+import { Avatar } from '../../components/Avatar'
+import { ToastProvider } from '../../components/Toast'
+
+gsap.registerPlugin(useGSAP)
 
 export function AppLayout() {
+  return (
+    <ToastProvider>
+      <AppShell />
+    </ToastProvider>
+  )
+}
+
+function AppShell() {
   const { user, profile, loading, signOut, isEmployer } = useAuth()
+  const rootRef = useRef<HTMLDivElement>(null)
+
+  useGSAP(
+    () => {
+      gsap.from('.app-nav-item', {
+        opacity: 0,
+        y: -8,
+        stagger: 0.04,
+        duration: 0.45,
+        ease: 'power2.out',
+      })
+    },
+    { scope: rootRef, dependencies: [isEmployer, loading] },
+  )
 
   if (loading) {
     return (
-      <div className="app-shell grid min-h-screen place-items-center text-white/60">
-        Loading Jobsy…
+      <div className="app-shell grid min-h-screen place-items-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-10 w-10 animate-pulse rounded-2xl bg-paint/40" />
+          <p className="text-sm text-white/50">Loading Jobsy…</p>
+        </div>
       </div>
     )
   }
@@ -36,9 +68,14 @@ export function AppLayout() {
   const role = isEmployer ? 'Employer' : 'Worker'
 
   return (
-    <div className="app-shell">
-      <header className="sticky top-0 z-40 border-b border-white/8 bg-[#050508]/90 backdrop-blur-md">
-        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4">
+    <div ref={rootRef} className="app-shell relative overflow-x-hidden">
+      <div className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute -left-24 top-0 h-72 w-72 rounded-full bg-paint/20 blur-[100px]" />
+        <div className="absolute right-0 top-40 h-80 w-80 rounded-full bg-paint/10 blur-[120px]" />
+      </div>
+
+      <header className="sticky top-0 z-40 border-b border-white/8 bg-[#050508]/80 backdrop-blur-xl">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
           <Logo dark to="/app" />
           <nav className="hidden items-center gap-1 md:flex">
             {links.map((l) => (
@@ -47,8 +84,10 @@ export function AppLayout() {
                 to={l.to}
                 end={l.end}
                 className={({ isActive }) =>
-                  `rounded-full px-3.5 py-1.5 text-sm font-medium transition ${
-                    isActive ? 'bg-white text-ink' : 'text-white/65 hover:text-white'
+                  `app-nav-item rounded-full px-3.5 py-1.5 text-sm font-medium transition duration-300 ${
+                    isActive
+                      ? 'bg-white text-ink shadow-[0_8px_24px_-12px_rgba(255,255,255,0.5)]'
+                      : 'text-white/60 hover:-translate-y-0.5 hover:text-white'
                   }`
                 }
               >
@@ -57,13 +96,22 @@ export function AppLayout() {
             ))}
           </nav>
           <div className="flex items-center gap-3">
-            <span className="hidden text-xs text-white/45 sm:inline">
-              {profile?.full_name ?? user.email} · {role}
-            </span>
+            <Link
+              to="/app/profile"
+              className="group flex items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.03] py-1 pr-3 pl-1 transition hover:border-paint/40"
+            >
+              <Avatar url={profile?.avatar_url} name={profile?.full_name ?? user.email} size="sm" ring={false} />
+              <span className="hidden text-left sm:block">
+                <span className="block text-xs font-semibold text-white group-hover:text-white">
+                  {profile?.full_name ?? 'Profile'}
+                </span>
+                <span className="block text-[10px] tracking-wide text-white/40 uppercase">{role}</span>
+              </span>
+            </Link>
             <button
               type="button"
               onClick={() => void signOut()}
-              className="rounded-full border border-white/15 px-3 py-1.5 text-xs font-semibold text-white/80 hover:border-white/35"
+              className="rounded-full border border-white/15 px-3 py-1.5 text-xs font-semibold text-white/75 transition hover:border-white/35 hover:text-white"
             >
               Sign out
             </button>
@@ -87,18 +135,9 @@ export function AppLayout() {
         </nav>
       </header>
 
-      <main className="mx-auto max-w-6xl px-4 py-6 pb-16">
+      <main className="relative mx-auto max-w-6xl px-4 py-8 pb-20">
         <Outlet />
       </main>
-
-      <div className="fixed bottom-4 right-4 md:hidden">
-        <Link
-          to="/"
-          className="rounded-full bg-paint px-4 py-2 text-xs font-bold text-white shadow-lg"
-        >
-          Marketing site
-        </Link>
-      </div>
     </div>
   )
 }

@@ -48,6 +48,12 @@ export type Job = {
   required_skills: string[] | null
   job_photos: string[] | null
   experience_level: string | null
+  employer?: {
+    id: string
+    full_name: string | null
+    avatar_url: string | null
+    company_name: string | null
+  } | null
 }
 
 export type ExternalJob = {

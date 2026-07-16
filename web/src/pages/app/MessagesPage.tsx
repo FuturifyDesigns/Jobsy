@@ -1,7 +1,13 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import gsap from 'gsap'
+import { useGSAP } from '@gsap/react'
 import { useAuth } from '../../lib/auth'
 import { supabase, type ChatMessage } from '../../lib/supabase'
+import { Avatar } from '../../components/Avatar'
+import { GlassCard, PageHero } from '../../components/AppUi'
+
+gsap.registerPlugin(useGSAP)
 
 type ConversationRow = {
   id: string
@@ -11,10 +17,33 @@ type ConversationRow = {
   employer_id: string | null
 }
 
+type Peer = {
+  id: string
+  full_name: string | null
+  avatar_url: string | null
+}
+
+type ConversationView = ConversationRow & { peer: Peer | null }
+
 export function MessagesPage() {
-  const { user } = useAuth()
-  const [rows, setRows] = useState<ConversationRow[]>([])
+  const { user, isEmployer } = useAuth()
+  const [rows, setRows] = useState<ConversationView[]>([])
   const [loading, setLoading] = useState(true)
+  const rootRef = useRef<HTMLDivElement>(null)
+
+  useGSAP(
+    () => {
+      if (loading) return
+      gsap.from('.msg-row', {
+        opacity: 0,
+        x: -12,
+        stagger: 0.05,
+        duration: 0.4,
+        ease: 'power2.out',
+      })
+    },
+    { scope: rootRef, dependencies: [loading, rows.length] },
+  )
 
   useEffect(() => {
     if (!user) return
@@ -28,8 +57,22 @@ export function MessagesPage() {
         .or(`worker_id.eq.${user!.id},employer_id.eq.${user!.id}`)
         .order('updated_at', { ascending: false })
         .limit(40)
+
+      const list = (data as ConversationRow[]) ?? []
+      const enriched = await Promise.all(
+        list.map(async (c) => {
+          const peerId = isEmployer ? c.worker_id : c.employer_id
+          if (!peerId) return { ...c, peer: null }
+          const { data: peer } = await supabase
+            .from('profiles')
+            .select('id, full_name, avatar_url')
+            .eq('id', peerId)
+            .maybeSingle()
+          return { ...c, peer: peer as Peer | null }
+        }),
+      )
       if (alive) {
-        setRows((data as ConversationRow[]) ?? [])
+        setRows(enriched)
         setLoading(false)
       }
     }
@@ -38,33 +81,41 @@ export function MessagesPage() {
     return () => {
       alive = false
     }
-  }, [user])
+  }, [user, isEmployer])
 
   return (
-    <div>
-      <h1
-        className="mb-6 font-[family-name:var(--font-display)] text-3xl tracking-tight"
-        style={{ fontWeight: 800 }}
-      >
-        Messages
-      </h1>
+    <div ref={rootRef}>
+      <PageHero
+        brush="Inbox"
+        title="Messages"
+        subtitle="Chat with workers and employers after you apply or hire."
+      />
       {loading && <p className="text-white/50">Loading…</p>}
       {!loading && rows.length === 0 && (
-        <p className="text-white/50">No conversations yet. Apply or hire to start chatting.</p>
+        <GlassCard hover={false} className="text-center !py-12">
+          <p className="text-white/50">No conversations yet. Apply or hire to start chatting.</p>
+        </GlassCard>
       )}
       <div className="grid gap-2">
-        {rows.map((c) => (
-          <Link
-            key={c.id}
-            to={`/app/messages/${c.id}`}
-            className="rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-3 hover:border-white/20"
-          >
-            <p className="text-sm font-medium text-white">Conversation</p>
-            <p className="mt-1 text-xs text-white/45">
-              Updated {c.updated_at ? new Date(c.updated_at).toLocaleString() : '—'}
-            </p>
-          </Link>
-        ))}
+        {rows.map((c) => {
+          const name = c.peer?.full_name ?? 'Conversation'
+          return (
+            <Link key={c.id} to={`/app/messages/${c.id}`} className="msg-row block">
+              <GlassCard className="!py-3.5">
+                <div className="flex items-center gap-3">
+                  <Avatar url={c.peer?.avatar_url} name={name} size="md" />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold text-white">{name}</p>
+                    <p className="mt-0.5 text-xs text-white/45">
+                      Updated {c.updated_at ? new Date(c.updated_at).toLocaleString() : '—'}
+                    </p>
+                  </div>
+                  <span className="text-white/25 transition group-hover:text-paint-soft">→</span>
+                </div>
+              </GlassCard>
+            </Link>
+          )
+        })}
       </div>
     </div>
   )
@@ -72,8 +123,9 @@ export function MessagesPage() {
 
 export function ChatThreadPage() {
   const { id } = useParams()
-  const { user } = useAuth()
+  const { user, isEmployer } = useAuth()
   const [messages, setMessages] = useState<ChatMessage[]>([])
+  const [peer, setPeer] = useState<Peer | null>(null)
   const [text, setText] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -81,8 +133,25 @@ export function ChatThreadPage() {
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (!id) return
+    if (!id || !user) return
     let alive = true
+
+    async function loadMeta() {
+      const { data: conv } = await supabase
+        .from('conversations')
+        .select('worker_id, employer_id')
+        .eq('id', id!)
+        .maybeSingle()
+      if (!alive || !conv) return
+      const peerId = isEmployer ? conv.worker_id : conv.employer_id
+      if (!peerId) return
+      const { data } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url')
+        .eq('id', peerId)
+        .maybeSingle()
+      if (alive) setPeer((data as Peer) ?? null)
+    }
 
     async function load() {
       const { data } = await supabase
@@ -99,6 +168,7 @@ export function ChatThreadPage() {
       }
     }
 
+    void loadMeta()
     void load()
 
     const channel = supabase
@@ -119,7 +189,7 @@ export function ChatThreadPage() {
       alive = false
       void supabase.removeChannel(channel)
     }
-  }, [id])
+  }, [id, user, isEmployer])
 
   async function sendText(e: FormEvent) {
     e.preventDefault()
@@ -234,15 +304,26 @@ export function ChatThreadPage() {
       <Link to="/app/messages" className="mb-4 text-sm text-white/45 hover:text-white">
         ← Conversations
       </Link>
-      <div className="flex-1 space-y-2 overflow-y-auto rounded-2xl border border-white/8 bg-black/20 p-4">
+      <div className="mb-4 flex items-center gap-3">
+        <Avatar url={peer?.avatar_url} name={peer?.full_name} size="md" />
+        <div>
+          <h1 className="font-[family-name:var(--font-display)] text-xl" style={{ fontWeight: 800 }}>
+            {peer?.full_name ?? 'Chat'}
+          </h1>
+          <p className="text-xs text-white/40">Secure Jobsy messages</p>
+        </div>
+      </div>
+      <div className="flex-1 space-y-3 overflow-y-auto rounded-[1.5rem] border border-white/8 bg-black/30 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
         {messages.map((m) => {
           const mine = m.sender_id === user?.id
           const type = m.message_type ?? 'text'
           return (
             <div
               key={m.id}
-              className={`max-w-[80%] rounded-2xl px-3.5 py-2 text-sm ${
-                mine ? 'ml-auto bg-[#1e4fd7] text-white' : 'bg-white/10 text-white/90'
+              className={`max-w-[80%] rounded-2xl px-3.5 py-2.5 text-sm shadow-sm ${
+                mine
+                  ? 'ml-auto bg-paint text-white'
+                  : 'border border-white/8 bg-white/10 text-white/90'
               }`}
             >
               {type === 'image' && m.attachment_url ? (
@@ -254,12 +335,7 @@ export function ChatThreadPage() {
                   />
                 </a>
               ) : type === 'file' && m.attachment_url ? (
-                <a
-                  href={m.attachment_url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="underline"
-                >
+                <a href={m.attachment_url} target="_blank" rel="noreferrer" className="underline">
                   {(m.attachment_meta?.filename as string) || 'Download file'}
                 </a>
               ) : (
@@ -271,7 +347,7 @@ export function ChatThreadPage() {
         <div ref={bottomRef} />
       </div>
       {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
-      <form onSubmit={sendText} className="mt-3 flex flex-wrap items-center gap-2">
+      <form onSubmit={(e) => void sendText(e)} className="mt-3 flex flex-wrap items-center gap-2">
         <input
           ref={fileRef}
           type="file"
@@ -296,12 +372,12 @@ export function ChatThreadPage() {
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Message…"
-          className="min-w-[12rem] flex-1 rounded-full border border-white/10 bg-white/5 px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#1e4fd7]/50"
+          className="min-w-[12rem] flex-1 rounded-full border border-white/10 bg-white/5 px-4 py-2.5 text-sm outline-none focus:border-paint/40 focus:ring-2 focus:ring-paint/30"
         />
         <button
           type="submit"
           disabled={busy}
-          className="rounded-full bg-[#1e4fd7] px-5 py-2.5 text-sm font-semibold disabled:opacity-50"
+          className="rounded-full bg-paint px-5 py-2.5 text-sm font-bold disabled:opacity-50"
         >
           Send
         </button>

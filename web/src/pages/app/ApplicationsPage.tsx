@@ -2,10 +2,14 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useAuth } from '../../lib/auth'
 import { supabase, type JobApplication } from '../../lib/supabase'
+import { Avatar } from '../../components/Avatar'
+import { GlassCard, PageHero, StatusPill } from '../../components/AppUi'
+import { useToast } from '../../components/Toast'
 
 export function ApplicationsPage() {
   const { id: jobId } = useParams()
   const { user } = useAuth()
+  const toast = useToast()
   const [jobTitle, setJobTitle] = useState('')
   const [apps, setApps] = useState<JobApplication[]>([])
   const [tab, setTab] = useState<'pending' | 'active' | 'closed'>('pending')
@@ -93,6 +97,7 @@ export function ApplicationsPage() {
       .eq('id', app.id)
     if (err) {
       setError(err.message)
+      toast.error('Update failed', err.message)
       setBusyId(null)
       return
     }
@@ -114,6 +119,9 @@ export function ApplicationsPage() {
           worker_id: app.worker_id,
         })
       }
+      toast.success('Applicant accepted', 'A chat thread is ready in Messages.')
+    } else {
+      toast.info('Application declined')
     }
     setApps((prev) => prev.map((a) => (a.id === app.id ? { ...a, status: next } : a)))
     setBusyId(null)
@@ -124,22 +132,16 @@ export function ApplicationsPage() {
       <Link to="/app" className="text-sm text-white/45 hover:text-white">
         ← My Jobs
       </Link>
-      <h1
-        className="mt-4 font-[family-name:var(--font-display)] text-3xl tracking-tight"
-        style={{ fontWeight: 800 }}
-      >
-        Applications
-      </h1>
-      <p className="mt-1 text-white/50">{jobTitle || 'Job'}</p>
+      <PageHero brush="Hiring" title="Applications" subtitle={jobTitle || 'Job'} />
 
-      <div className="mt-6 flex gap-2">
+      <div className="mt-2 flex gap-2">
         {(['pending', 'active', 'closed'] as const).map((t) => (
           <button
             key={t}
             type="button"
             onClick={() => setTab(t)}
-            className={`rounded-full px-4 py-1.5 text-xs font-bold capitalize ${
-              tab === t ? 'bg-white text-ink' : 'border border-white/15 text-white/60'
+            className={`rounded-full px-4 py-1.5 text-xs font-bold capitalize transition ${
+              tab === t ? 'bg-white text-ink' : 'border border-white/15 text-white/60 hover:border-white/30'
             }`}
           >
             {t}
@@ -155,50 +157,62 @@ export function ApplicationsPage() {
 
       <div className="mt-4 grid gap-3">
         {filtered.map((app) => (
-          <div key={app.id} className="rounded-2xl border border-white/8 bg-white/[0.03] p-4">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="font-semibold">{app.worker?.full_name ?? 'Worker'}</p>
-                <p className="mt-1 text-xs text-white/45">
-                  {[app.worker?.location, app.status].filter(Boolean).join(' · ')}
-                </p>
+          <GlassCard key={app.id}>
+            <div className="flex items-start gap-3">
+              <Avatar
+                url={app.worker?.avatar_url}
+                name={app.worker?.full_name ?? 'Worker'}
+                size="md"
+              />
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="font-semibold">{app.worker?.full_name ?? 'Worker'}</p>
+                      <StatusPill status={app.status} />
+                    </div>
+                    <p className="mt-1 text-xs text-white/45">
+                      {app.worker?.location || 'Botswana'}
+                    </p>
+                  </div>
+                  {app.worker?.rating != null && (
+                    <p className="text-sm font-semibold text-paint-soft">★ {app.worker.rating.toFixed(1)}</p>
+                  )}
+                </div>
+                {app.cover_letter && (
+                  <p className="mt-3 text-sm text-white/65">{app.cover_letter}</p>
+                )}
+                {app.status === 'pending' && (
+                  <div className="mt-4 flex gap-2">
+                    <button
+                      type="button"
+                      disabled={busyId === app.id}
+                      onClick={() => void decide(app, 'accepted')}
+                      className="rounded-full bg-emerald-500 px-4 py-2 text-xs font-bold text-black disabled:opacity-50"
+                    >
+                      Accept
+                    </button>
+                    <button
+                      type="button"
+                      disabled={busyId === app.id}
+                      onClick={() => void decide(app, 'rejected')}
+                      className="rounded-full border border-red-400/40 px-4 py-2 text-xs font-bold text-red-300 disabled:opacity-50"
+                    >
+                      Reject
+                    </button>
+                  </div>
+                )}
+                {(app.status === 'accepted' || app.status === 'in_progress') && (
+                  <Link
+                    to="/app/messages"
+                    className="mt-4 inline-block text-sm font-semibold text-paint-soft hover:underline"
+                  >
+                    Open messages →
+                  </Link>
+                )}
               </div>
-              {app.worker?.rating != null && (
-                <p className="text-sm text-[#4d7ef0]">★ {app.worker.rating.toFixed(1)}</p>
-              )}
             </div>
-            {app.cover_letter && (
-              <p className="mt-3 text-sm text-white/65">{app.cover_letter}</p>
-            )}
-            {app.status === 'pending' && (
-              <div className="mt-4 flex gap-2">
-                <button
-                  type="button"
-                  disabled={busyId === app.id}
-                  onClick={() => void decide(app, 'accepted')}
-                  className="rounded-full bg-emerald-500 px-4 py-2 text-xs font-bold text-black disabled:opacity-50"
-                >
-                  Accept
-                </button>
-                <button
-                  type="button"
-                  disabled={busyId === app.id}
-                  onClick={() => void decide(app, 'rejected')}
-                  className="rounded-full border border-red-400/40 px-4 py-2 text-xs font-bold text-red-300 disabled:opacity-50"
-                >
-                  Reject
-                </button>
-              </div>
-            )}
-            {(app.status === 'accepted' || app.status === 'in_progress') && (
-              <Link
-                to="/app/messages"
-                className="mt-4 inline-block text-sm font-semibold text-[#4d7ef0] hover:underline"
-              >
-                Open messages →
-              </Link>
-            )}
-          </div>
+          </GlassCard>
         ))}
       </div>
     </div>

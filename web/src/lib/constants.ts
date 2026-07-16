@@ -40,4 +40,4 @@ export const BUSINESS_TYPES = [
 ] as const
 
 export const JOB_SELECT =
-  'id, title, description, category, location, budget_amount, budget_type, status, employer_id, created_at, required_skills, job_photos, experience_level'
+  'id, title, description, category, location, budget_amount, budget_type, status, employer_id, created_at, required_skills, job_photos, experience_level, employer:profiles!jobs_employer_id_fkey(id, full_name, avatar_url, company_name)'

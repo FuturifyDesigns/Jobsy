@@ -1,14 +1,35 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import gsap from 'gsap'
+import { useGSAP } from '@gsap/react'
 import { JOB_SELECT } from '../../lib/constants'
 import { useAuth } from '../../lib/auth'
 import { supabase, type Job } from '../../lib/supabase'
+import { Avatar } from '../../components/Avatar'
+import { GlassCard, PageHero, StatusPill } from '../../components/AppUi'
+
+gsap.registerPlugin(useGSAP)
 
 export function EmployerJobsPage() {
-  const { user } = useAuth()
+  const { user, profile } = useAuth()
   const [jobs, setJobs] = useState<Job[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const rootRef = useRef<HTMLDivElement>(null)
+
+  useGSAP(
+    () => {
+      if (loading) return
+      gsap.from('.job-card-reveal', {
+        opacity: 0,
+        y: 18,
+        stagger: 0.06,
+        duration: 0.45,
+        ease: 'power2.out',
+      })
+    },
+    { scope: rootRef, dependencies: [loading, jobs.length] },
+  )
 
   useEffect(() => {
     if (!user) return
@@ -23,8 +44,19 @@ export function EmployerJobsPage() {
         .order('created_at', { ascending: false })
         .limit(80)
       if (!alive) return
-      if (err) setError(err.message)
-      else setJobs((data as Job[]) ?? [])
+      if (err) {
+        // Fallback without employer join
+        const fb = await supabase
+          .from('jobs')
+          .select(
+            'id, title, description, category, location, budget_amount, budget_type, status, employer_id, created_at, required_skills, job_photos, experience_level',
+          )
+          .eq('employer_id', user!.id)
+          .order('created_at', { ascending: false })
+          .limit(80)
+        if (fb.error) setError(fb.error.message)
+        else setJobs((fb.data as unknown as Job[]) ?? [])
+      } else setJobs((data as unknown as Job[]) ?? [])
       setLoading(false)
     }
 
@@ -41,45 +73,54 @@ export function EmployerJobsPage() {
   }, [user])
 
   return (
-    <div>
-      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="font-[family-name:var(--font-brush)] text-2xl text-[#4d7ef0]" style={{ fontWeight: 700 }}>
-            Hiring
-          </p>
-          <h1 className="font-[family-name:var(--font-display)] text-3xl tracking-tight" style={{ fontWeight: 800 }}>
-            My Jobs
-          </h1>
-        </div>
-        <Link
-          to="/app/post"
-          className="inline-flex rounded-full bg-[#1e4fd7] px-5 py-2.5 text-sm font-semibold text-white"
-        >
-          Post a Job
-        </Link>
-      </div>
+    <div ref={rootRef}>
+      <PageHero
+        brush="Hiring"
+        title="My Jobs"
+        subtitle="Manage postings, review applicants, and keep hiring moving."
+        action={
+          <Link
+            to="/app/post"
+            className="inline-flex rounded-full bg-paint px-5 py-2.5 text-sm font-bold text-white shadow-[0_16px_40px_-18px_rgba(30,79,215,0.85)] transition hover:brightness-110"
+          >
+            Post a Job
+          </Link>
+        }
+      />
 
       {loading && <p className="text-white/50">Loading…</p>}
       {error && <p className="text-red-400">{error}</p>}
       {!loading && jobs.length === 0 && (
-        <p className="text-white/50">No jobs yet. Post your first one.</p>
+        <GlassCard hover={false} className="text-center !py-12">
+          <p className="text-white/55">No jobs yet. Post your first one.</p>
+          <Link to="/app/post" className="mt-4 inline-flex text-sm font-semibold text-paint-soft hover:underline">
+            Create a posting →
+          </Link>
+        </GlassCard>
       )}
 
       <div className="grid gap-3">
         {jobs.map((job) => (
-          <div
-            key={job.id}
-            className="rounded-2xl border border-white/8 bg-white/[0.03] p-4"
-          >
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <h2 className="text-lg font-semibold">{job.title}</h2>
-                <p className="mt-1 text-sm text-white/50">
-                  {[job.category, job.location, job.status].filter(Boolean).join(' · ')}
-                </p>
+          <GlassCard key={job.id} className="job-card-reveal">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div className="flex min-w-0 flex-1 gap-3">
+                <Avatar
+                  url={profile?.avatar_url}
+                  name={profile?.full_name ?? profile?.company_name}
+                  size="md"
+                />
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h2 className="truncate text-lg font-semibold">{job.title}</h2>
+                    <StatusPill status={job.status} />
+                  </div>
+                  <p className="mt-1 text-sm text-white/50">
+                    {[job.category, job.location].filter(Boolean).join(' · ') || 'Botswana'}
+                  </p>
+                </div>
               </div>
               {job.budget_amount != null && (
-                <p className="text-sm font-semibold text-[#4d7ef0]">
+                <p className="shrink-0 rounded-full bg-paint/15 px-3 py-1 text-sm font-bold text-paint-soft">
                   P{job.budget_amount}
                   {job.budget_type ? ` / ${job.budget_type}` : ''}
                 </p>
@@ -88,18 +129,18 @@ export function EmployerJobsPage() {
             <div className="mt-4 flex flex-wrap gap-2">
               <Link
                 to={`/app/jobs/${job.id}/applications`}
-                className="rounded-full bg-white px-4 py-2 text-xs font-bold text-ink"
+                className="rounded-full bg-white px-4 py-2 text-xs font-bold text-ink transition hover:scale-[1.02]"
               >
                 Applications
               </Link>
               <Link
                 to={`/app/jobs/${job.id}`}
-                className="rounded-full border border-white/15 px-4 py-2 text-xs font-semibold text-white/80"
+                className="rounded-full border border-white/15 px-4 py-2 text-xs font-semibold text-white/80 hover:border-white/35"
               >
                 View
               </Link>
             </div>
-          </div>
+          </GlassCard>
         ))}
       </div>
     </div>
