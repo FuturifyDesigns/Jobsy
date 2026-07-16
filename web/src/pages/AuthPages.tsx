@@ -1,10 +1,11 @@
-import { useRef, useState, type FormEvent, type ReactNode } from 'react'
-import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react'
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { Logo } from '../components/Logo'
 import { MagneticButton } from '../components/MagneticButton'
 import { useAuth } from '../lib/auth'
+import { transitionToApp } from '../lib/authTransition'
 import { AUTH_RESET_PASSWORD_URL } from '../lib/constants'
 import { supabase } from '../lib/supabase'
 import {
@@ -20,13 +21,32 @@ gsap.registerPlugin(useGSAP)
 export function SignInPage() {
   const { signIn, signInWithGoogle, user, loading } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+  const handoffStarted = useRef(false)
 
-  if (!loading && user) return <Navigate to="/app" replace />
+  useEffect(() => {
+    const authError = (location.state as { authError?: string } | null)?.authError
+    if (authError) setError(authError)
+  }, [location.state])
+
+  useEffect(() => {
+    if (loading || !user || handoffStarted.current) return
+    handoffStarted.current = true
+    void transitionToApp(() => navigate('/app', { replace: true }))
+  }, [loading, user, navigate])
+
+  if (!loading && user && !busy) {
+    return (
+      <div className="grid min-h-screen place-items-center bg-[#F2F2F2] text-sm text-mute">
+        Entering Jobsy…
+      </div>
+    )
+  }
 
   function validate(): boolean {
     const next: Record<string, string> = {}
@@ -43,13 +63,15 @@ export function SignInPage() {
     setError(null)
     if (!validate()) return
     setBusy(true)
+    handoffStarted.current = true
     const res = await signIn(email.trim(), password)
-    setBusy(false)
     if (res.error) {
+      handoffStarted.current = false
+      setBusy(false)
       setError(res.error)
       return
     }
-    navigate('/app')
+    await transitionToApp(() => navigate('/app', { replace: true }))
   }
 
   async function onGoogle() {
@@ -208,10 +230,23 @@ export function SignUpPage() {
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [done, setDone] = useState(false)
+  const handoffStarted = useRef(false)
 
   const strength = getPasswordStrength(password)
 
-  if (!loading && user) return <Navigate to="/app" replace />
+  useEffect(() => {
+    if (loading || !user || handoffStarted.current) return
+    handoffStarted.current = true
+    void transitionToApp(() => navigate('/app', { replace: true }))
+  }, [loading, user, navigate])
+
+  if (!loading && user && !busy) {
+    return (
+      <div className="grid min-h-screen place-items-center bg-[#F2F2F2] text-sm text-mute">
+        Entering Jobsy…
+      </div>
+    )
+  }
 
   function validate(): boolean {
     const next: Record<string, string> = {}
@@ -233,14 +268,16 @@ export function SignUpPage() {
     setError(null)
     if (!validate()) return
     setBusy(true)
+    handoffStarted.current = true
     const res = await signUp(email.trim(), password, fullName.trim())
-    setBusy(false)
     if (res.error) {
+      handoffStarted.current = false
+      setBusy(false)
       setError(res.error)
       return
     }
     setDone(true)
-    navigate('/app')
+    await transitionToApp(() => navigate('/app', { replace: true }))
   }
 
   async function onGoogle() {
@@ -250,7 +287,7 @@ export function SignUpPage() {
       return
     }
     setBusy(true)
-    const res = await signInWithGoogle()
+    const res = await signInWithGoogle({ fromSignUp: true })
     if (res.error) {
       setBusy(false)
       setError(res.error)

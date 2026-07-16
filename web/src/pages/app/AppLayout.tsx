@@ -3,6 +3,7 @@ import { NavLink, Outlet, Navigate, Link } from 'react-router-dom'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { useAuth } from '../../lib/auth'
+import { playAppEnter } from '../../lib/authTransition'
 import { Logo } from '../../components/Logo'
 import { Avatar } from '../../components/Avatar'
 import { ToastProvider } from '../../components/Toast'
@@ -24,15 +25,19 @@ function AppShell() {
 
   useGSAP(
     () => {
+      if (loading || !user) return
+      const fromAuth = sessionStorage.getItem('jobsy_auth_enter') === '1'
+      playAppEnter(rootRef.current)
       gsap.from('.app-nav-item', {
         opacity: 0,
         y: -8,
         stagger: 0.04,
         duration: 0.45,
         ease: 'power2.out',
+        delay: fromAuth ? 0.2 : 0,
       })
     },
-    { scope: rootRef, dependencies: [isEmployer, loading] },
+    { scope: rootRef, dependencies: [isEmployer, loading, user] },
   )
 
   if (loading) {

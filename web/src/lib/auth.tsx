@@ -19,7 +19,7 @@ type AuthState = {
   isEmployer: boolean
   signIn: (email: string, password: string) => Promise<{ error: string | null }>
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: string | null }>
-  signInWithGoogle: () => Promise<{ error: string | null }>
+  signInWithGoogle: (opts?: { fromSignUp?: boolean }) => Promise<{ error: string | null }>
   signOut: () => Promise<void>
   refreshProfile: () => Promise<void>
   switchRole: (target: 'worker' | 'employer') => Promise<{ error: string | null; role?: string }>
@@ -116,7 +116,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         emailRedirectTo: AUTH_EMAIL_VERIFIED_URL,
       },
     })
-    if (error) return { error: error.message }
+    if (error) {
+      const msg = error.message.toLowerCase()
+      if (
+        msg.includes('already registered') ||
+        msg.includes('already been registered') ||
+        msg.includes('user already exists') ||
+        error.code === 'user_already_exists'
+      ) {
+        return { error: 'An account with this email already exists. Please sign in instead.' }
+      }
+      return { error: error.message }
+    }
+    // Supabase may return a user with empty identities when the email is taken
+    // and email confirmation is enabled (anti-enumeration). Treat as existing.
+    const identities = data.user?.identities
+    if (data.user && Array.isArray(identities) && identities.length === 0) {
+      return { error: 'An account with this email already exists. Please sign in instead.' }
+    }
     if (data.user?.id) {
       await supabase.rpc('create_profile_for_user', {
         user_id: data.user.id,
@@ -128,14 +145,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: null }
   }, [])
 
-  const signInWithGoogle = useCallback(async () => {
+  const signInWithGoogle = useCallback(async (opts?: { fromSignUp?: boolean }) => {
+    const base = `${window.location.origin}${import.meta.env.BASE_URL}auth/callback`.replace(
+      /([^:]\/)\/+/g,
+      '$1',
+    )
+    const redirectTo = opts?.fromSignUp ? `${base}?from=signup` : base
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}${import.meta.env.BASE_URL}auth/callback`.replace(
-          /([^:]\/)\/+/g,
-          '$1',
-        ),
+        redirectTo,
         queryParams: { access_type: 'offline', prompt: 'consent' },
       },
     })
