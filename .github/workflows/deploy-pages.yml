@@ -1,0 +1,70 @@
+name: Deploy Jobsy web to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'web/**'
+      - '.github/workflows/deploy-pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install and build
+        working-directory: web
+        env:
+          GITHUB_PAGES: 'true'
+        run: |
+          npm ci
+          npm run build
+          cp dist/index.html dist/404.html
+
+      - name: Sync built site into repo root (main-branch Pages)
+        run: |
+          rm -rf site-assets
+          cp web/dist/index.html index.html
+          cp web/dist/404.html 404.html
+          cp web/dist/email-verified.html email-verified.html
+          cp web/dist/reset-password.html reset-password.html
+          cp web/dist/favicon.svg favicon.svg
+          cp web/dist/icons.svg icons.svg
+          cp web/dist/hero-poster.png hero-poster.png
+          cp -R web/dist/site-assets site-assets
+          mkdir -p auth
+          cp -R web/dist/auth/. auth/
+
+      - name: Commit published site if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.html 404.html email-verified.html reset-password.html favicon.svg icons.svg hero-poster.png site-assets auth
+          if git diff --staged --quiet; then
+            echo "No site changes to publish"
+          else
+            git commit -m "Publish web site to GitHub Pages"
+            git push
+          fi
+
+      - name: Also publish gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./web/dist
+          force_orphan: true

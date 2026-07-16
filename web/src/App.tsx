@@ -18,10 +18,12 @@ import { ApplicationsPage } from './pages/app/ApplicationsPage'
 import { SavedJobsPage } from './pages/app/SavedJobsPage'
 import { WalletPage } from './pages/app/WalletPage'
 
+const routerBasename = import.meta.env.BASE_URL.replace(/\/$/, '') || undefined
+
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <BrowserRouter basename={routerBasename}>
         <CookieProvider>
           <Routes>
             <Route path="/" element={<LandingPage />} />

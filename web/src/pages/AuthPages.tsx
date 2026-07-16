@@ -67,7 +67,7 @@ export function SignInPage() {
       kicker="Welcome back"
       title="Sign in to Jobsy"
       subtitle="Pick up where you left off — jobs, chats, and hires sync with the app."
-      imageSrc="/auth/sign-in.png"
+      imageSrc={`${import.meta.env.BASE_URL}auth/sign-in.png`}
       imageAlt="Jobsy — Sign in"
     >
       <form onSubmit={onSubmit} className="space-y-4" noValidate>
@@ -154,7 +154,7 @@ export function ForgotPasswordPage() {
       kicker="Account recovery"
       title="Reset your password"
       subtitle="We’ll email you a secure link. You’ll set a new password on our verification page."
-      imageSrc="/auth/sign-in.png"
+      imageSrc={`${import.meta.env.BASE_URL}auth/sign-in.png`}
       imageAlt="Jobsy — Reset password"
     >
       {sent ? (
@@ -262,7 +262,7 @@ export function SignUpPage() {
       kicker="Get started"
       title="Join Jobsy"
       subtitle="Find work. Get paid. Keep moving — across Botswana."
-      imageSrc="/auth/sign-up.png"
+      imageSrc={`${import.meta.env.BASE_URL}auth/sign-up.png`}
       imageAlt="Jobsy — Sign up"
     >
       {done ? (

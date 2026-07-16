@@ -18,13 +18,13 @@ class PrivacyConsentService {
   }
 
   static Future<void> openPrivacyPolicy() =>
-      _open('${AppConstants.websiteUrl}/privacy.html');
+      _open('${AppConstants.websiteUrl}/privacy');
 
   static Future<void> openTerms() =>
-      _open('${AppConstants.websiteUrl}/terms.html');
+      _open('${AppConstants.websiteUrl}/terms');
 
   static Future<void> openCookies() =>
-      _open('${AppConstants.websiteUrl}/cookies.html');
+      _open('${AppConstants.websiteUrl}/cookies');
 
   static Future<void> _open(String url) async {
     final uri = Uri.parse(url);
