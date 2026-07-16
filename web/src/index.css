@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #0a0a0a;
+  --color-paper: #f2f3f6;
+  --color-paper-deep: #e8eaef;
+  --color-paint: #1e4fd7;
+  --color-paint-deep: #1438a8;
+  --color-paint-soft: #4d7ef0;
+  --color-mute: #5c6578;
+  --color-line: #d5d9e2;
+  --font-display: "Syne", system-ui, sans-serif;
+  --font-body: "Manrope", system-ui, sans-serif;
+  --font-brush: "Caveat", cursive;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: auto;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-body);
+  color: var(--color-ink);
+  background: var(--color-paper);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-paint) 35%, transparent);
+  color: var(--color-ink);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+.paper-grain {
+  background-image:
+    radial-gradient(circle at 18% 12%, rgba(30, 79, 215, 0.07), transparent 42%),
+    radial-gradient(circle at 82% 8%, rgba(30, 79, 215, 0.09), transparent 38%),
+    radial-gradient(circle at 70% 78%, rgba(10, 10, 10, 0.03), transparent 45%),
+    linear-gradient(180deg, #f6f7fa 0%, #eef0f5 100%);
+}
+
+.clip-reveal {
+  will-change: clip-path, transform;
+}
+
+.brush-underline {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' fill='none'%3E%3Cpath d='M2 8c40-6 80-6 120-2 28 3 52 2 76-2' stroke='%231e4fd7' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left bottom;
+  background-size: 100% 10px;
+  padding-bottom: 0.12em;
+}
+
+.app-shell {
+  background: #050508;
+  color: #fafafa;
+  min-height: 100vh;
+}

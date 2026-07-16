@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ic_launcher_background">#000000</color>
+    <color name="splash_color">#0A0A0F</color>
+    <!-- Employer sky blue used as default FCM notification accent -->
+    <color name="notification_color">#0EA5E9</color>
+</resources>

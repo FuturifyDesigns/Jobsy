@@ -1,0 +1,66 @@
+name: jobsy
+description: Find work or hire workers near you
+publish_to: 'none'
+version: 1.0.1+2
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  supabase_flutter: ^2.5.0
+  cupertino_icons: ^1.0.8
+  google_fonts: ^6.1.0
+  geolocator: ^12.0.0
+  google_maps_flutter: ^2.6.0
+  geocoding: ^3.0.0
+  image_picker: ^1.1.0
+  image_cropper: ^8.0.2
+  flutter_image_compress: ^2.3.0
+  cached_network_image: ^3.3.1
+  shared_preferences: ^2.2.3
+  google_sign_in: ^6.2.2
+  app_links: ^6.3.3
+  intl: ^0.19.0
+  url_launcher: ^6.2.6
+  provider: ^6.1.2
+  emoji_picker_flutter: ^4.0.0
+  record: ^6.0.0
+  audioplayers: ^6.1.0
+  path_provider: ^2.1.3
+  permission_handler: ^11.3.1
+  file_picker: ^8.0.0
+  flutter_native_contact_picker: ^0.0.6
+  pdfrx: ^1.0.0
+  firebase_core: ^3.12.1
+  firebase_messaging: ^15.2.4
+  flutter_local_notifications: ^18.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  flutter_launcher_icons: ^0.13.1
+
+# Force fixed record_linux even if a transitive pin tries to hold the old 0.7.2
+# (the old version has compile errors against record_platform_interface >=1.5)
+dependency_overrides:
+  record_linux: ^1.1.0
+
+flutter:
+  uses-material-design: true
+  
+  assets:
+    - assets/logo/
+    - assets/images/
+    - assets/icons/
+    - assets/sounds/
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/logo/app_icon_1024.png"
+  adaptive_icon_background: "#000000"
+  adaptive_icon_foreground: "assets/logo/app_icon_1024.png"
