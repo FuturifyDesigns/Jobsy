@@ -1,13 +1,15 @@
 import { createClient } from '@supabase/supabase-js'
 
-const url = import.meta.env.VITE_SUPABASE_URL as string
-const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string
+/** Public anon credentials (same project as the Flutter app / reset-password page). */
+const FALLBACK_URL = 'https://jvulfleleybcoljcmpwq.supabase.co'
+const FALLBACK_ANON_KEY =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp2dWxmbGVsZXliY29samNtcHdxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg3NDA4ODgsImV4cCI6MjA4NDMxNjg4OH0.5MbMVUlsbHk3i-y7diYnnS40uSQ2aC2iaNEkdFRY9Dc'
 
-if (!url || !anonKey) {
-  console.warn('Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY')
-}
+const url = (import.meta.env.VITE_SUPABASE_URL as string | undefined)?.trim() || FALLBACK_URL
+const anonKey =
+  (import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined)?.trim() || FALLBACK_ANON_KEY
 
-export const supabase = createClient(url ?? '', anonKey ?? '', {
+export const supabase = createClient(url, anonKey, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,

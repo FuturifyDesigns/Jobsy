@@ -31,6 +31,8 @@ jobs:
         working-directory: web
         env:
           GITHUB_PAGES: 'true'
+          VITE_SUPABASE_URL: https://jvulfleleybcoljcmpwq.supabase.co
+          VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp2dWxmbGVsZXliY29samNtcHdxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg3NDA4ODgsImV4cCI6MjA4NDMxNjg4OH0.5MbMVUlsbHk3i-y7diYnnS40uSQ2aC2iaNEkdFRY9Dc
         run: |
           npm install
           npm run build
