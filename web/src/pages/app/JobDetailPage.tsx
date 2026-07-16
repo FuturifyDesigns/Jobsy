@@ -84,9 +84,9 @@ export function JobDetailPage() {
       <Link to="/app" className="text-sm text-white/45 hover:text-white">
         ← Back
       </Link>
-      <div className="mt-4 flex items-start justify-between gap-3">
+      <div className="mt-3 flex flex-wrap items-start justify-between gap-3 sm:mt-4">
         <h1
-          className="font-[family-name:var(--font-display)] text-3xl tracking-tight"
+          className="font-[family-name:var(--font-display)] text-[1.9rem] tracking-tight sm:text-3xl"
           style={{ fontWeight: 800 }}
         >
           {job.title}
@@ -114,22 +114,22 @@ export function JobDetailPage() {
         </p>
       )}
       {job.job_photos && job.job_photos.length > 0 && (
-        <div className="mt-5 flex gap-2 overflow-x-auto">
+        <div className="mt-4 flex gap-2 overflow-x-auto">
           {job.job_photos.map((url) => (
             <img
               key={url}
               src={url}
               alt=""
-              className="h-28 w-40 shrink-0 rounded-xl object-cover"
+              className="h-24 w-32 shrink-0 rounded-xl object-cover sm:h-28 sm:w-40"
             />
           ))}
         </div>
       )}
-      <p className="mt-6 whitespace-pre-wrap leading-relaxed text-white/75">
+      <p className="mt-5 whitespace-pre-wrap leading-relaxed text-white/75 sm:mt-6">
         {job.description || 'No description.'}
       </p>
       {job.required_skills && job.required_skills.length > 0 && (
-        <div className="mt-6 flex flex-wrap gap-2">
+        <div className="mt-5 flex flex-wrap gap-2 sm:mt-6">
           {job.required_skills.map((s) => (
             <span
               key={s}
@@ -144,7 +144,7 @@ export function JobDetailPage() {
       {isOwner && (
         <Link
           to={`/app/jobs/${job.id}/applications`}
-          className="mt-8 inline-flex rounded-full bg-white px-5 py-2.5 text-sm font-bold text-black"
+          className="mt-6 inline-flex rounded-full bg-white px-5 py-2.5 text-sm font-bold text-black sm:mt-8"
         >
           View applications
         </Link>
@@ -153,7 +153,7 @@ export function JobDetailPage() {
       {!isEmployer && !isOwner && (
         <form
           onSubmit={apply}
-          className="mt-10 space-y-3 rounded-2xl border border-white/10 bg-white/[0.03] p-5"
+          className="mt-7 space-y-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:mt-10 sm:p-5"
         >
           <h2 className="font-semibold">Apply</h2>
           <textarea

@@ -101,8 +101,8 @@ export function MessagesPage() {
           const name = c.peer?.full_name ?? 'Conversation'
           return (
             <Link key={c.id} to={`/app/messages/${c.id}`} className="msg-row block">
-              <GlassCard className="!py-3.5">
-                <div className="flex items-center gap-3">
+              <GlassCard className="!py-3">
+                <div className="flex items-center gap-2.5 sm:gap-3">
                   <Avatar url={c.peer?.avatar_url} name={name} size="md" />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-semibold text-white">{name}</p>
@@ -300,11 +300,11 @@ export function ChatThreadPage() {
   }
 
   return (
-    <div className="flex min-h-[70vh] flex-col">
-      <Link to="/app/messages" className="mb-4 text-sm text-white/45 hover:text-white">
+    <div className="flex min-h-[65vh] flex-col">
+      <Link to="/app/messages" className="mb-3 text-sm text-white/45 hover:text-white sm:mb-4">
         ← Conversations
       </Link>
-      <div className="mb-4 flex items-center gap-3">
+      <div className="mb-3 flex items-center gap-2.5 sm:mb-4 sm:gap-3">
         <Avatar url={peer?.avatar_url} name={peer?.full_name} size="md" />
         <div>
           <h1 className="font-[family-name:var(--font-display)] text-xl" style={{ fontWeight: 800 }}>
@@ -313,14 +313,14 @@ export function ChatThreadPage() {
           <p className="text-xs text-white/40">Secure Jobsy messages</p>
         </div>
       </div>
-      <div className="flex-1 space-y-3 overflow-y-auto rounded-[1.5rem] border border-white/8 bg-black/30 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+      <div className="flex-1 space-y-2.5 overflow-y-auto rounded-[1.25rem] border border-white/8 bg-black/30 p-3 sm:space-y-3 sm:rounded-[1.5rem] sm:p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
         {messages.map((m) => {
           const mine = m.sender_id === user?.id
           const type = m.message_type ?? 'text'
           return (
             <div
               key={m.id}
-              className={`max-w-[80%] rounded-2xl px-3.5 py-2.5 text-sm shadow-sm ${
+              className={`max-w-[88%] rounded-2xl px-3 py-2 text-sm shadow-sm sm:max-w-[80%] sm:px-3.5 sm:py-2.5 ${
                 mine
                   ? 'ml-auto bg-paint text-white'
                   : 'border border-white/8 bg-white/10 text-white/90'
@@ -331,7 +331,7 @@ export function ChatThreadPage() {
                   <img
                     src={m.attachment_url}
                     alt="Attachment"
-                    className="max-h-56 rounded-xl object-cover"
+                    className="max-h-48 rounded-xl object-cover sm:max-h-56"
                   />
                 </a>
               ) : type === 'file' && m.attachment_url ? (
@@ -372,7 +372,7 @@ export function ChatThreadPage() {
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Message…"
-          className="min-w-[12rem] flex-1 rounded-full border border-white/10 bg-white/5 px-4 py-2.5 text-sm outline-none focus:border-paint/40 focus:ring-2 focus:ring-paint/30"
+          className="order-3 w-full min-w-0 flex-1 rounded-full border border-white/10 bg-white/5 px-4 py-2.5 text-sm outline-none focus:border-paint/40 focus:ring-2 focus:ring-paint/30 sm:order-none sm:min-w-[12rem]"
         />
         <button
           type="submit"

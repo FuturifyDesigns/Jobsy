@@ -91,12 +91,12 @@ export function ExternalJobsPage() {
             className="reveal-item block"
           >
             <GlassCard>
-              <div className="flex items-start gap-3.5">
+              <div className="flex items-start gap-2.5 sm:gap-3.5">
                 <CompanyLogoTile job={job} />
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <h2 className="text-lg font-semibold text-white transition group-hover:text-paint-soft">
+                      <h2 className="text-base font-semibold text-white transition group-hover:text-paint-soft sm:text-lg">
                         {job.title}
                       </h2>
                       <p className="mt-1 text-sm text-white/50">
@@ -134,7 +134,7 @@ function CompanyLogoTile({ job }: { job: ExternalJob }) {
   const initial = companyInitial(job)
 
   return (
-    <div className="web-job-logo grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-2xl border border-white/10 bg-white shadow-[0_8px_24px_-12px_rgba(0,0,0,0.5)]">
+    <div className="web-job-logo grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-2xl border border-white/10 bg-white shadow-[0_8px_24px_-12px_rgba(0,0,0,0.5)] sm:h-14 sm:w-14">
       {url && !failed ? (
         <img
           src={url}

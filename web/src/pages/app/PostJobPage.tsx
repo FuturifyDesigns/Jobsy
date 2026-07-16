@@ -148,8 +148,8 @@ export function PostJobPage() {
         </div>
       )}
 
-      <GlassCard hover={false} className="!p-6 md:!p-8">
-      <form onSubmit={onSubmit} className="grid gap-4 lg:grid-cols-2" noValidate>
+      <GlassCard hover={false} className="!p-4 sm:!p-6 md:!p-8">
+      <form onSubmit={onSubmit} className="grid gap-3 sm:gap-4 lg:grid-cols-2" noValidate>
         <Field
           label="Title"
           value={title}

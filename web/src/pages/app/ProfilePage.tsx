@@ -179,8 +179,8 @@ export function ProfilePage() {
         subtitle={`${user?.email ?? ''} · ${isEmployer ? 'Employer' : 'Worker'}`}
       />
 
-      <GlassCard className="profile-reveal mb-6 !p-6" hover={false}>
-        <div className="flex flex-col items-center gap-5 sm:flex-row sm:items-start">
+      <GlassCard className="profile-reveal mb-4 !p-4 sm:mb-6 sm:!p-6" hover={false}>
+        <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start sm:gap-5">
           <div className="relative">
             <Avatar url={previewUrl} name={fullName || user?.email} size="xl" />
             <button
@@ -207,7 +207,7 @@ export function ProfilePage() {
             />
           </div>
           <div className="flex-1 text-center sm:text-left">
-            <h2 className="font-[family-name:var(--font-display)] text-2xl" style={{ fontWeight: 800 }}>
+            <h2 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl" style={{ fontWeight: 800 }}>
               {fullName || 'Your name'}
             </h2>
             <p className="mt-1 text-sm text-white/45">
@@ -224,8 +224,8 @@ export function ProfilePage() {
         </div>
       </GlassCard>
 
-      <form onSubmit={(e) => void save(e)} className="profile-reveal space-y-4" noValidate>
-        <GlassCard hover={false} className="!p-6 space-y-4">
+      <form onSubmit={(e) => void save(e)} className="profile-reveal space-y-3 sm:space-y-4" noValidate>
+        <GlassCard hover={false} className="!p-4 space-y-3 sm:!p-6 sm:space-y-4">
           <Field label="Full name" value={fullName} onChange={setFullName} placeholder="e.g. Thabo Molefe" required />
           <Field
             label="Phone"
@@ -303,12 +303,12 @@ export function ProfilePage() {
       <button
         type="button"
         onClick={() => void signOut()}
-        className="profile-reveal mt-8 text-sm text-white/40 hover:text-white"
+        className="profile-reveal mt-6 text-sm text-white/40 hover:text-white sm:mt-8"
       >
         Sign out
       </button>
 
-      <div className="profile-reveal mt-10 border-t border-white/10 pt-6">
+      <div className="profile-reveal mt-8 border-t border-white/10 pt-5 sm:mt-10 sm:pt-6">
         <p className="mb-3 text-xs font-bold tracking-[0.2em] text-white/40 uppercase">Legal & privacy</p>
         <ul className="space-y-2 text-sm text-white/65">
           <li>

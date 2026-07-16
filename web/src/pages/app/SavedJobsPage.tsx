@@ -79,10 +79,10 @@ export function SavedJobsPage() {
           const poster = job.employer?.company_name || job.employer?.full_name || 'Employer'
           return (
             <GlassCard key={job.id}>
-              <Link to={`/app/jobs/${job.id}`} className="flex items-start gap-3">
+              <Link to={`/app/jobs/${job.id}`} className="flex items-start gap-2.5 sm:gap-3">
                 <Avatar url={job.employer?.avatar_url} name={poster} size="md" />
                 <div className="min-w-0 flex-1">
-                  <h2 className="text-lg font-semibold hover:text-paint-soft">{job.title}</h2>
+                  <h2 className="text-base font-semibold hover:text-paint-soft sm:text-lg">{job.title}</h2>
                   <p className="mt-1 text-sm text-white/50">
                     {poster}
                     {[job.category, job.location].filter(Boolean).length

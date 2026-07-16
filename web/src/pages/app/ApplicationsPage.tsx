@@ -134,7 +134,7 @@ export function ApplicationsPage() {
       </Link>
       <PageHero brush="Hiring" title="Applications" subtitle={jobTitle || 'Job'} />
 
-      <div className="mt-2 flex gap-2">
+      <div className="mt-2 flex flex-wrap gap-2">
         {(['pending', 'active', 'closed'] as const).map((t) => (
           <button
             key={t}
@@ -158,7 +158,7 @@ export function ApplicationsPage() {
       <div className="mt-4 grid gap-3">
         {filtered.map((app) => (
           <GlassCard key={app.id}>
-            <div className="flex items-start gap-3">
+            <div className="flex items-start gap-2.5 sm:gap-3">
               <Avatar
                 url={app.worker?.avatar_url}
                 name={app.worker?.full_name ?? 'Worker'}
@@ -166,9 +166,9 @@ export function ApplicationsPage() {
               />
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
+                  <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="font-semibold">{app.worker?.full_name ?? 'Worker'}</p>
+                      <p className="truncate font-semibold">{app.worker?.full_name ?? 'Worker'}</p>
                       <StatusPill status={app.status} />
                     </div>
                     <p className="mt-1 text-xs text-white/45">
@@ -183,7 +183,7 @@ export function ApplicationsPage() {
                   <p className="mt-3 text-sm text-white/65">{app.cover_letter}</p>
                 )}
                 {app.status === 'pending' && (
-                  <div className="mt-4 flex gap-2">
+                  <div className="mt-4 flex flex-wrap gap-2">
                     <button
                       type="button"
                       disabled={busyId === app.id}

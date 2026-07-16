@@ -65,7 +65,7 @@ export function EmployerJobsPage() {
         action={
           <Link
             to="/app/post"
-            className="inline-flex rounded-full bg-paint px-5 py-2.5 text-sm font-bold text-white shadow-[0_16px_40px_-18px_rgba(30,79,215,0.85)] transition hover:brightness-110"
+            className="inline-flex rounded-full bg-paint px-4 py-2.5 text-sm font-bold text-white shadow-[0_16px_40px_-18px_rgba(30,79,215,0.85)] transition hover:brightness-110 sm:px-5"
           >
             Post a Job
           </Link>
@@ -86,8 +86,8 @@ export function EmployerJobsPage() {
       <div className="grid gap-3">
         {jobs.map((job) => (
           <GlassCard key={job.id} className="job-card-reveal">
-            <div className="flex flex-wrap items-start justify-between gap-4">
-              <div className="flex min-w-0 flex-1 gap-3">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="flex min-w-0 flex-1 gap-2.5 sm:gap-3">
                 <Avatar
                   url={profile?.avatar_url}
                   name={profile?.full_name ?? profile?.company_name}
@@ -95,7 +95,7 @@ export function EmployerJobsPage() {
                 />
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <h2 className="truncate text-lg font-semibold">{job.title}</h2>
+                    <h2 className="truncate text-base font-semibold sm:text-lg">{job.title}</h2>
                     <StatusPill status={job.status} />
                   </div>
                   <p className="mt-1 text-sm text-white/50">
@@ -110,7 +110,7 @@ export function EmployerJobsPage() {
                 </p>
               )}
             </div>
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className="mt-3 flex flex-wrap gap-2">
               <Link
                 to={`/app/jobs/${job.id}/applications`}
                 className="rounded-full bg-white px-4 py-2 text-xs font-bold text-black transition hover:scale-[1.02]"

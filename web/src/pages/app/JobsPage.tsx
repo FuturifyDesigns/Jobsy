@@ -90,10 +90,10 @@ export function JobsPage() {
         title="Find Jobs"
         subtitle="Browse live postings from employers across Botswana."
         action={
-          <div className="flex w-full flex-wrap gap-2 sm:w-auto">
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap">
             <Link
               to="/app/saved"
-              className="rounded-full border border-white/15 px-4 py-2 text-sm font-semibold text-white/80 hover:border-white/35"
+              className="rounded-full border border-white/15 px-4 py-2 text-center text-sm font-semibold text-white/80 hover:border-white/35"
             >
               Saved
             </Link>
@@ -119,12 +119,12 @@ export function JobsPage() {
           return (
             <Link key={job.id} to={`/app/jobs/${job.id}`} className="job-card-reveal block">
               <GlassCard>
-                <div className="flex items-start gap-3">
+                <div className="flex items-start gap-2.5 sm:gap-3">
                   <Avatar url={job.employer?.avatar_url} name={poster} size="md" />
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <h2 className="text-lg font-semibold text-white">{job.title}</h2>
+                        <h2 className="text-base font-semibold text-white sm:text-lg">{job.title}</h2>
                         <p className="mt-1 text-sm text-white/50">
                           {poster}
                           {[job.category, job.location].filter(Boolean).length

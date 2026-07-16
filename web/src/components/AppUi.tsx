@@ -124,27 +124,27 @@ export function PageHero({
   )
 
   return (
-    <div ref={ref} className="mb-10 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-      <div className="flex gap-4">
+    <div ref={ref} className="mb-6 flex flex-col gap-3 sm:mb-8 sm:gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div className="flex gap-3 sm:gap-4">
         <div className="hero-trunk relative mt-1 hidden w-px shrink-0 bg-gradient-to-b from-paint via-paint/50 to-transparent sm:block" style={{ minHeight: '4.5rem' }}>
           <span className="absolute -top-1 left-1/2 h-2.5 w-2.5 -translate-x-1/2 rounded-full bg-paint shadow-[0_0_16px_rgba(30,79,215,0.8)]" />
         </div>
         <div className="hero-copy">
           {brush && (
-            <p className="font-[family-name:var(--font-brush)] text-2xl text-paint-soft" style={{ fontWeight: 700 }}>
+              <p className="font-[family-name:var(--font-brush)] text-xl text-paint-soft sm:text-2xl" style={{ fontWeight: 700 }}>
               {brush}
             </p>
           )}
           <h1
-            className="font-[family-name:var(--font-display)] text-3xl tracking-tight md:text-[2.75rem]"
+            className="font-[family-name:var(--font-display)] text-[1.95rem] leading-none tracking-tight sm:text-3xl md:text-[2.75rem]"
             style={{ fontWeight: 800 }}
           >
             {title}
           </h1>
-          {subtitle && <p className="mt-2 max-w-xl text-sm leading-relaxed text-white/50">{subtitle}</p>}
+          {subtitle && <p className="mt-1.5 max-w-xl text-sm leading-relaxed text-white/50 sm:mt-2">{subtitle}</p>}
         </div>
       </div>
-      {action && <div className="hero-action">{action}</div>}
+      {action && <div className="hero-action w-full sm:w-auto">{action}</div>}
     </div>
   )
 }
@@ -231,7 +231,7 @@ export function GlassCard({
   return (
     <div
       ref={root}
-      className={`group relative overflow-hidden rounded-[1.35rem] border border-white/8 bg-white/[0.035] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] backdrop-blur-sm transition-[border-color,background] duration-300 will-change-transform ${
+      className={`group relative overflow-hidden rounded-[1.2rem] border border-white/8 bg-white/[0.035] p-3.5 sm:rounded-[1.35rem] sm:p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] backdrop-blur-sm transition-[border-color,background] duration-300 will-change-transform ${
         hover ? 'hover:border-paint/40 hover:bg-white/[0.055]' : ''
       } ${className}`}
       style={{ transformStyle: 'preserve-3d' }}
