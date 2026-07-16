@@ -146,16 +146,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const signInWithGoogle = useCallback(async (opts?: { fromSignUp?: boolean }) => {
-    const base = `${window.location.origin}${import.meta.env.BASE_URL}auth/callback`.replace(
+    // Keep redirectTo clean (exact allow-list match). Stash signup intent locally.
+    if (opts?.fromSignUp) sessionStorage.setItem('jobsy_oauth_from', 'signup')
+    else sessionStorage.removeItem('jobsy_oauth_from')
+
+    const redirectTo = `${window.location.origin}${import.meta.env.BASE_URL}auth/callback`.replace(
       /([^:]\/)\/+/g,
       '$1',
     )
-    const redirectTo = opts?.fromSignUp ? `${base}?from=signup` : base
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo,
-        queryParams: { access_type: 'offline', prompt: 'consent' },
+        queryParams: { access_type: 'offline', prompt: 'select_account' },
       },
     })
     return { error: error?.message ?? null }

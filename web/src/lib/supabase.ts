@@ -13,8 +13,11 @@ export const supabase = createClient(url, anonKey, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
-    detectSessionInUrl: true,
+    // Callback page exchanges the code once. Auto-detect races and clears the
+    // PKCE verifier first → "PKCE code verifier not found in storage".
+    detectSessionInUrl: false,
     flowType: 'pkce',
+    storage: typeof window !== 'undefined' ? window.localStorage : undefined,
   },
 })
 

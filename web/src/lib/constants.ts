@@ -2,6 +2,8 @@
 export const PAGES_BASE = 'https://futurifydesigns.github.io/Jobsy'
 export const AUTH_EMAIL_VERIFIED_URL = `${PAGES_BASE}/email-verified.html?from=web`
 export const AUTH_RESET_PASSWORD_URL = `${PAGES_BASE}/reset-password.html`
+/** Must match Supabase Auth → URL Configuration → Redirect URLs exactly. */
+export const AUTH_OAUTH_CALLBACK_URL = `${PAGES_BASE}/auth/callback`
 
 export const JOB_CATEGORIES = [
   'Construction',

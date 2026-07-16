@@ -6,6 +6,14 @@ import { transitionToApp } from '../lib/authTransition'
 /** Auth user older than this was already registered before this Google flow. */
 const EXISTING_ACCOUNT_MIN_AGE_MS = 90_000
 
+function friendlyAuthError(message: string) {
+  const m = message.toLowerCase()
+  if (m.includes('pkce') || m.includes('code verifier')) {
+    return 'Google sign-in didn’t finish in this browser. Please try Continue with Google again from this same tab.'
+  }
+  return message
+}
+
 /** Handles Google OAuth / email redirect PKCE exchange. */
 export function AuthCallbackPage() {
   const navigate = useNavigate()
@@ -18,23 +26,38 @@ export function AuthCallbackPage() {
     async function finish() {
       const url = new URL(window.location.href)
       const code = url.searchParams.get('code')
-      const fromSignUp = url.searchParams.get('from') === 'signup'
+      const fromSignUp = sessionStorage.getItem('jobsy_oauth_from') === 'signup'
+      sessionStorage.removeItem('jobsy_oauth_from')
 
       if (code) {
         const { error } = await supabase.auth.exchangeCodeForSession(code)
         if (!alive) return
+
+        // Strip ?code= so refresh doesn’t re-exchange
+        window.history.replaceState({}, document.title, url.pathname)
+
         if (error) {
-          navigate(fromSignUp ? '/signup' : '/signin', {
-            replace: true,
-            state: { authError: error.message },
-          })
-          return
+          // Race recovery: session may already exist even if exchange reports PKCE error
+          const { data } = await supabase.auth.getSession()
+          if (!alive) return
+          if (!data.session) {
+            navigate(fromSignUp ? '/signup' : '/signin', {
+              replace: true,
+              state: { authError: friendlyAuthError(error.message) },
+            })
+            return
+          }
         }
       } else {
         const { data } = await supabase.auth.getSession()
         if (!alive) return
         if (!data.session) {
-          navigate(fromSignUp ? '/signup' : '/signin', { replace: true })
+          navigate(fromSignUp ? '/signup' : '/signin', {
+            replace: true,
+            state: {
+              authError: 'Google sign-in was cancelled or incomplete. Please try again.',
+            },
+          })
           return
         }
       }
