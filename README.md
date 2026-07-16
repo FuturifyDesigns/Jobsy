@@ -1,20 +1,23 @@
 # Jobsy - Find Work or Hire Workers Near You
 
-## Quick Start
+Built by [Futurify Designs](https://futurifydesigns.com)
 
-1. Install dependencies:
+## Quick Start (Flutter)
+
 ```bash
 flutter pub get
-```
-
-2. Run the app:
-```bash
 flutter run
 ```
 
-3. Build APK:
+## Web app
+
 ```bash
-flutter build apk --release
+cd web
+npm install
+cp .env.example .env   # add Supabase URL + anon key
+npm run dev
 ```
 
-Built by Futurify Designs
+## GitHub Pages
+
+Root `index.html` and `reset-password.html` remain for email verification / password reset at [futurifydesigns.github.io/Jobsy](https://futurifydesigns.github.io/Jobsy/).
