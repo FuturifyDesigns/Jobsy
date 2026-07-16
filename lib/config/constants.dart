@@ -58,7 +58,7 @@ class AppConstants {
 
   /// Email confirmation lands on GitHub Pages.
   static const String authEmailVerifiedRedirect =
-      'https://futurifydesigns.github.io/Jobsy/';
+      'https://futurifydesigns.github.io/Jobsy/email-verified.html?from=app';
 
   /// Public site (legal pages + auth Pages).
   static const String websiteUrl = 'https://futurifydesigns.github.io/Jobsy';

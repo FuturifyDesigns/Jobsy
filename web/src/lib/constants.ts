@@ -1,6 +1,6 @@
 /** GitHub Pages auth + legal (Supabase email redirects). */
 export const PAGES_BASE = 'https://futurifydesigns.github.io/Jobsy'
-export const AUTH_EMAIL_VERIFIED_URL = `${PAGES_BASE}/`
+export const AUTH_EMAIL_VERIFIED_URL = `${PAGES_BASE}/email-verified.html?from=web`
 export const AUTH_RESET_PASSWORD_URL = `${PAGES_BASE}/reset-password.html`
 
 export const JOB_CATEGORIES = [

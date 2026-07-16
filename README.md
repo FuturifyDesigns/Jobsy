@@ -20,4 +20,4 @@ npm run dev
 
 ## GitHub Pages
 
-Root `index.html` and `reset-password.html` remain for email verification / password reset at [futurifydesigns.github.io/Jobsy](https://futurifydesigns.github.io/Jobsy/).
+GitHub Pages hosts the public home, `email-verified.html`, and `reset-password.html` at [futurifydesigns.github.io/Jobsy](https://futurifydesigns.github.io/Jobsy/).

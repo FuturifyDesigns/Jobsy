@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Jobsy — Find work in Botswana</title>
+  <title>Email Verified — Jobsy</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
@@ -29,8 +29,8 @@
       padding: 24px;
     }
     .card {
-      width: min(100%, 480px);
-      background: rgba(255, 255, 255, 0.94);
+      width: min(100%, 440px);
+      background: rgba(255, 255, 255, 0.92);
       border: 1px solid rgba(10, 10, 12, 0.08);
       border-radius: 1.75rem;
       padding: 2.5rem 2rem;
@@ -57,10 +57,20 @@
       font-size: 2rem;
       box-shadow: 0 18px 40px -18px rgba(30, 79, 215, 0.85);
     }
+    .badge {
+      width: 4rem;
+      height: 4rem;
+      margin: 0 auto 1.25rem;
+      border-radius: 999px;
+      background: rgba(30, 79, 215, 0.12);
+      color: var(--paint);
+      display: grid;
+      place-items: center;
+    }
     h1 {
       font-family: Syne, sans-serif;
       font-weight: 800;
-      font-size: clamp(1.85rem, 5vw, 2.35rem);
+      font-size: clamp(1.75rem, 5vw, 2.15rem);
       letter-spacing: -0.03em;
       line-height: 1.1;
     }
@@ -72,9 +82,9 @@
     }
     .actions {
       margin-top: 1.75rem;
-      display: grid;
-      gap: 0.75rem;
+      display: none;
     }
+    .actions.show { display: grid; gap: 0.75rem; }
     .btn {
       display: inline-flex;
       align-items: center;
@@ -91,22 +101,10 @@
       color: white;
       box-shadow: 0 16px 36px -18px rgba(30, 79, 215, 0.9);
     }
-    .btn-primary:hover { background: var(--paint-deep); transform: translateY(-1px); }
-    .btn-ghost {
-      border: 1.5px solid rgba(10, 10, 12, 0.12);
-      color: var(--ink);
-      background: transparent;
+    .btn-primary:hover {
+      background: var(--paint-deep);
+      transform: translateY(-1px);
     }
-    .btn-ghost:hover { border-color: rgba(10, 10, 12, 0.28); }
-    .links {
-      margin-top: 1.5rem;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem 1.25rem;
-      justify-content: center;
-      font-size: 0.85rem;
-    }
-    .links a { color: var(--paint); font-weight: 700; text-decoration: none; }
     .foot {
       margin-top: 2rem;
       padding-top: 1.25rem;
@@ -120,21 +118,41 @@
 <body>
   <main class="card">
     <div class="mark" aria-hidden="true">J</div>
-    <h1>Jobsy</h1>
-    <p>Find work and hire talent across Botswana. Open the app to get started, or browse our legal pages below.</p>
-    <div class="actions">
-      <a class="btn btn-primary" href="jobsy://login-callback">Open Jobsy app</a>
+    <div class="badge" aria-hidden="true">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 6 9 17l-5-5" />
+      </svg>
     </div>
-    <div class="links">
-      <a href="./privacy.html">Privacy</a>
-      <a href="./terms.html">Terms</a>
-      <a href="./cookies.html">Cookies</a>
+    <h1>Email verified</h1>
+    <p id="copy">Your Jobsy account is confirmed.</p>
+    <div class="actions" id="actions">
+      <a class="btn btn-primary" href="./">Return to site</a>
     </div>
     <div class="foot">
       Built by <a href="https://futurifydesigns.com" target="_blank" rel="noreferrer">Futurify Designs</a>
       · © <span id="y"></span> Jobsy
     </div>
   </main>
-  <script>document.getElementById('y').textContent = new Date().getFullYear()</script>
+  <script>
+    document.getElementById('y').textContent = new Date().getFullYear()
+
+    const params = new URLSearchParams(window.location.search)
+    const from = (params.get('from') || '').toLowerCase()
+    const uaMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)
+    // App signup (or mobile without from=web) → close page. Website signup → return to site.
+    const isAppFlow = from === 'app' || (from !== 'web' && uaMobile)
+
+    const copy = document.getElementById('copy')
+    const actions = document.getElementById('actions')
+
+    if (isAppFlow) {
+      copy.textContent =
+        'Your Jobsy account is confirmed. You can close this page and open the Jobsy app to sign in.'
+    } else {
+      copy.textContent =
+        'Your Jobsy account is confirmed. Return to the site to continue signing in.'
+      actions.classList.add('show')
+    }
+  </script>
 </body>
 </html>
