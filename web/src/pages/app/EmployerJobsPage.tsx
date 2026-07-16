@@ -1,14 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import gsap from 'gsap'
-import { useGSAP } from '@gsap/react'
 import { JOB_SELECT } from '../../lib/constants'
 import { useAuth } from '../../lib/auth'
 import { supabase, type Job } from '../../lib/supabase'
 import { Avatar } from '../../components/Avatar'
-import { GlassCard, PageHero, StatusPill } from '../../components/AppUi'
-
-gsap.registerPlugin(useGSAP)
+import { GlassCard, PageHero, StatusPill, useStaggerReveal } from '../../components/AppUi'
 
 export function EmployerJobsPage() {
   const { user, profile } = useAuth()
@@ -17,19 +13,7 @@ export function EmployerJobsPage() {
   const [error, setError] = useState<string | null>(null)
   const rootRef = useRef<HTMLDivElement>(null)
 
-  useGSAP(
-    () => {
-      if (loading) return
-      gsap.from('.job-card-reveal', {
-        opacity: 0,
-        y: 18,
-        stagger: 0.06,
-        duration: 0.45,
-        ease: 'power2.out',
-      })
-    },
-    { scope: rootRef, dependencies: [loading, jobs.length] },
-  )
+  useStaggerReveal(rootRef, [loading, jobs.length], '.job-card-reveal')
 
   useEffect(() => {
     if (!user) return

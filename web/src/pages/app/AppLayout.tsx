@@ -6,6 +6,7 @@ import { useAuth } from '../../lib/auth'
 import { Logo } from '../../components/Logo'
 import { Avatar } from '../../components/Avatar'
 import { ToastProvider } from '../../components/Toast'
+import { AmbientField } from '../../components/AppUi'
 
 gsap.registerPlugin(useGSAP)
 
@@ -69,12 +70,9 @@ function AppShell() {
 
   return (
     <div ref={rootRef} className="app-shell relative overflow-x-hidden">
-      <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute -left-24 top-0 h-72 w-72 rounded-full bg-paint/20 blur-[100px]" />
-        <div className="absolute right-0 top-40 h-80 w-80 rounded-full bg-paint/10 blur-[120px]" />
-      </div>
+      <AmbientField />
 
-      <header className="sticky top-0 z-40 border-b border-white/8 bg-[#050508]/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-40 border-b border-white/8 bg-[#050508]/75 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
           <Logo dark to="/app" />
           <nav className="hidden items-center gap-1 md:flex">

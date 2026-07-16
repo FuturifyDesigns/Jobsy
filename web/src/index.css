@@ -89,3 +89,8 @@ select {
 .app-shell :where(a, button).bg-white {
   color: #0a0a0a !important;
 }
+
+/* Logo tiles on web jobs — white pad must stay dark letter */
+.app-shell .web-job-logo {
+  color: #0a0a0a !important;
+}

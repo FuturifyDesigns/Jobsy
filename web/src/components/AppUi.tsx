@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, type ReactNode } from 'react'
+import { useEffect, useId, useRef, type ReactNode, type RefObject } from 'react'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 
@@ -99,6 +99,7 @@ export function ConfirmDialog({
   )
 }
 
+/** Branch.co-style page intro: trunk accent + brush + title. */
 export function PageHero({
   brush,
   title,
@@ -110,23 +111,40 @@ export function PageHero({
   subtitle?: string
   action?: ReactNode
 }) {
+  const ref = useRef<HTMLDivElement>(null)
+
+  useGSAP(
+    () => {
+      const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
+      tl.from('.hero-trunk', { scaleY: 0, transformOrigin: 'top', duration: 0.55 })
+        .from('.hero-copy > *', { opacity: 0, y: 18, stagger: 0.07, duration: 0.45 }, '-=0.25')
+        .from('.hero-action', { opacity: 0, x: 16, duration: 0.4 }, '-=0.25')
+    },
+    { scope: ref },
+  )
+
   return (
-    <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-      <div>
-        {brush && (
-          <p className="font-[family-name:var(--font-brush)] text-2xl text-paint-soft" style={{ fontWeight: 700 }}>
-            {brush}
-          </p>
-        )}
-        <h1
-          className="font-[family-name:var(--font-display)] text-3xl tracking-tight md:text-4xl"
-          style={{ fontWeight: 800 }}
-        >
-          {title}
-        </h1>
-        {subtitle && <p className="mt-2 max-w-xl text-sm leading-relaxed text-white/50">{subtitle}</p>}
+    <div ref={ref} className="mb-10 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+      <div className="flex gap-4">
+        <div className="hero-trunk relative mt-1 hidden w-px shrink-0 bg-gradient-to-b from-paint via-paint/50 to-transparent sm:block" style={{ minHeight: '4.5rem' }}>
+          <span className="absolute -top-1 left-1/2 h-2.5 w-2.5 -translate-x-1/2 rounded-full bg-paint shadow-[0_0_16px_rgba(30,79,215,0.8)]" />
+        </div>
+        <div className="hero-copy">
+          {brush && (
+            <p className="font-[family-name:var(--font-brush)] text-2xl text-paint-soft" style={{ fontWeight: 700 }}>
+              {brush}
+            </p>
+          )}
+          <h1
+            className="font-[family-name:var(--font-display)] text-3xl tracking-tight md:text-[2.75rem]"
+            style={{ fontWeight: 800 }}
+          >
+            {title}
+          </h1>
+          {subtitle && <p className="mt-2 max-w-xl text-sm leading-relaxed text-white/50">{subtitle}</p>}
+        </div>
       </div>
-      {action}
+      {action && <div className="hero-action">{action}</div>}
     </div>
   )
 }
@@ -150,23 +168,123 @@ export function StatusPill({ status }: { status: string | null | undefined }) {
   )
 }
 
+/** Lusion-style magnetic glass card — tilt + glow follow cursor. */
 export function GlassCard({
   children,
   className = '',
   hover = true,
+  magnetic = true,
 }: {
   children: ReactNode
   className?: string
   hover?: boolean
+  magnetic?: boolean
 }) {
+  const root = useRef<HTMLDivElement>(null)
+
+  useGSAP(
+    () => {
+      if (!hover || !magnetic) return
+      const el = root.current
+      if (!el) return
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      if (reduce) return
+
+      const onMove = (e: MouseEvent) => {
+        const rect = el.getBoundingClientRect()
+        const px = (e.clientX - rect.left) / rect.width - 0.5
+        const py = (e.clientY - rect.top) / rect.height - 0.5
+        gsap.to(el, {
+          rotateY: px * 6,
+          rotateX: -py * 6,
+          y: -4,
+          duration: 0.35,
+          ease: 'power3.out',
+          transformPerspective: 800,
+        })
+        const glow = el.querySelector('.card-glow') as HTMLElement | null
+        if (glow) {
+          gsap.to(glow, {
+            x: px * 40,
+            y: py * 40,
+            opacity: 0.55,
+            duration: 0.35,
+            ease: 'power3.out',
+          })
+        }
+      }
+      const onLeave = () => {
+        gsap.to(el, { rotateX: 0, rotateY: 0, y: 0, duration: 0.6, ease: 'power3.out' })
+        const glow = el.querySelector('.card-glow') as HTMLElement | null
+        if (glow) gsap.to(glow, { x: 0, y: 0, opacity: 0.25, duration: 0.5 })
+      }
+      el.addEventListener('mousemove', onMove)
+      el.addEventListener('mouseleave', onLeave)
+      return () => {
+        el.removeEventListener('mousemove', onMove)
+        el.removeEventListener('mouseleave', onLeave)
+      }
+    },
+    { scope: root, dependencies: [hover, magnetic] },
+  )
+
   return (
     <div
-      className={`group relative overflow-hidden rounded-[1.35rem] border border-white/8 bg-white/[0.035] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] backdrop-blur-sm transition duration-300 ${
-        hover ? 'hover:-translate-y-0.5 hover:border-paint/35 hover:bg-white/[0.055]' : ''
+      ref={root}
+      className={`group relative overflow-hidden rounded-[1.35rem] border border-white/8 bg-white/[0.035] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] backdrop-blur-sm transition-[border-color,background] duration-300 will-change-transform ${
+        hover ? 'hover:border-paint/40 hover:bg-white/[0.055]' : ''
       } ${className}`}
+      style={{ transformStyle: 'preserve-3d' }}
     >
-      <div className="pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full bg-paint/10 blur-2xl transition group-hover:bg-paint/20" />
+      <div className="card-glow pointer-events-none absolute -right-10 -top-10 h-36 w-36 rounded-full bg-paint/25 opacity-25 blur-3xl" />
+      <div className="pointer-events-none absolute inset-y-3 left-0 w-px bg-gradient-to-b from-paint via-paint/30 to-transparent opacity-0 transition group-hover:opacity-100" />
       <div className="relative">{children}</div>
     </div>
+  )
+}
+
+/** Floating paint orbs — Lusion ambient field for the app shell. */
+export function AmbientField() {
+  const ref = useRef<HTMLDivElement>(null)
+
+  useGSAP(
+    () => {
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      if (reduce) return
+      gsap.to('.orb-a', { y: 40, x: 20, duration: 7, yoyo: true, repeat: -1, ease: 'sine.inOut' })
+      gsap.to('.orb-b', { y: -30, x: -25, duration: 9, yoyo: true, repeat: -1, ease: 'sine.inOut' })
+      gsap.to('.orb-c', { y: 24, x: -18, duration: 6.5, yoyo: true, repeat: -1, ease: 'sine.inOut' })
+    },
+    { scope: ref },
+  )
+
+  return (
+    <div ref={ref} className="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden>
+      <div className="orb-a absolute -left-24 top-0 h-80 w-80 rounded-full bg-paint/25 blur-[110px]" />
+      <div className="orb-b absolute right-[-4rem] top-32 h-96 w-96 rounded-full bg-[#4d7ef0]/15 blur-[130px]" />
+      <div className="orb-c absolute bottom-20 left-1/3 h-64 w-64 rounded-full bg-paint/10 blur-[100px]" />
+    </div>
+  )
+}
+
+export function useStaggerReveal(
+  scope: RefObject<HTMLElement | null>,
+  deps: unknown[],
+  selector = '.reveal-item',
+) {
+  useGSAP(
+    () => {
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      if (reduce) return
+      gsap.from(selector, {
+        opacity: 0,
+        y: 22,
+        stagger: 0.055,
+        duration: 0.5,
+        ease: 'power3.out',
+        clearProps: 'all',
+      })
+    },
+    { scope, dependencies: deps },
   )
 }
