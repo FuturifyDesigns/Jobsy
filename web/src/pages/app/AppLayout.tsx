@@ -22,12 +22,22 @@ export function AppLayout() {
 function AppShell() {
   const { user, profile, loading, signOut, isEmployer } = useAuth()
   const rootRef = useRef<HTMLDivElement>(null)
+  const navAnimated = useRef(false)
 
   useGSAP(
     () => {
       if (loading || !user) return
       const fromAuth = sessionStorage.getItem('jobsy_auth_enter') === '1'
       playAppEnter(rootRef.current)
+
+      // Animate nav once — re-running on profile/role updates was leaving
+      // later links stuck at opacity: 0 from an interrupted stagger.
+      if (navAnimated.current) return
+      navAnimated.current = true
+
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      if (reduce) return
+
       gsap.from('.app-nav-item', {
         opacity: 0,
         y: -8,
@@ -35,9 +45,10 @@ function AppShell() {
         duration: 0.45,
         ease: 'power2.out',
         delay: fromAuth ? 0.2 : 0,
+        clearProps: 'opacity,transform',
       })
     },
-    { scope: rootRef, dependencies: [isEmployer, loading, user] },
+    { scope: rootRef, dependencies: [loading, user] },
   )
 
   if (loading) {
@@ -87,10 +98,10 @@ function AppShell() {
                 to={l.to}
                 end={l.end}
                 className={({ isActive }) =>
-                  `app-nav-item rounded-full px-3.5 py-1.5 text-sm font-medium transition duration-300 ${
+                  `app-nav-item rounded-full px-3.5 py-1.5 text-sm font-semibold transition duration-300 ${
                     isActive
                       ? 'bg-white text-black shadow-[0_8px_24px_-12px_rgba(255,255,255,0.5)]'
-                      : 'text-white/60 hover:-translate-y-0.5 hover:text-white'
+                      : 'text-white/85 hover:-translate-y-0.5 hover:bg-white/10 hover:text-white'
                   }`
                 }
               >
@@ -127,8 +138,8 @@ function AppShell() {
               to={l.to}
               end={l.end}
               className={({ isActive }) =>
-                `shrink-0 rounded-full px-3 py-1.5 text-xs font-medium ${
-                  isActive ? 'bg-white text-black' : 'text-white/60'
+                `shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold ${
+                  isActive ? 'bg-white text-black' : 'text-white/85 hover:bg-white/10 hover:text-white'
                 }`
               }
             >
