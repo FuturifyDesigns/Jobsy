@@ -50,14 +50,18 @@ class AppConstants {
   static const String webJobsFeedSubtitle =
       'Imported from job sites · Apply on the original website';
 
-  static const String authResetPasswordRedirect = 'jobsy://reset-password';
+  static const String authResetPasswordRedirect =
+      'https://futurifydesigns.github.io/Jobsy/reset-password.html';
 
   /// OAuth / magic-link callback (Google PKCE fallback, email links).
   static const String authLoginCallbackRedirect = 'jobsy://login-callback';
 
-  /// Public website for Privacy, Terms, and Cookies (Botswana DPA).
-  /// Update when the production web domain is live.
-  static const String websiteUrl = 'http://localhost:5173';
+  /// Email confirmation lands on GitHub Pages.
+  static const String authEmailVerifiedRedirect =
+      'https://futurifydesigns.github.io/Jobsy/';
+
+  /// Public site (legal pages + auth Pages).
+  static const String websiteUrl = 'https://futurifydesigns.github.io/Jobsy';
 
   static const String supportEmail = 'futurifydesigns@gmail.com';
   static const String dataProtectionAct = 'Data Protection Act, 2024 (Act No. 18 of 2024)';

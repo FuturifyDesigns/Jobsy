@@ -1,170 +1,148 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email Verified - Jobsy</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #2563EB 0%, #F97316 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .container {
-            background: white;
-            border-radius: 24px;
-            padding: 48px 32px;
-            max-width: 480px;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            animation: slideUp 0.5s ease-out;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .logo {
-            width: 120px;
-            height: 120px;
-            margin: 0 auto 24px;
-            background: linear-gradient(135deg, #2563EB, #F97316);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.05);
-            }
-        }
-
-        .checkmark {
-            width: 70px;
-            height: 70px;
-        }
-
-        .checkmark circle {
-            stroke-dasharray: 176;
-            stroke-dashoffset: 176;
-            animation: drawCircle 0.6s ease-out forwards;
-        }
-
-        .checkmark path {
-            stroke-dasharray: 50;
-            stroke-dashoffset: 50;
-            animation: drawCheck 0.4s 0.6s ease-out forwards;
-        }
-
-        @keyframes drawCircle {
-            to {
-                stroke-dashoffset: 0;
-            }
-        }
-
-        @keyframes drawCheck {
-            to {
-                stroke-dashoffset: 0;
-            }
-        }
-
-        h1 {
-            color: #1a202c;
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 16px;
-        }
-
-        p {
-            color: #718096;
-            font-size: 18px;
-            line-height: 1.6;
-            margin-bottom: 32px;
-        }
-
-        .btn {
-            background: linear-gradient(135deg, #2563EB, #1d4ed8);
-            color: white;
-            padding: 16px 48px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-size: 18px;
-            font-weight: 600;
-            display: inline-block;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.5);
-        }
-
-        .countdown {
-            color: #a0aec0;
-            font-size: 14px;
-            margin-top: 24px;
-        }
-
-        .footer {
-            margin-top: 32px;
-            padding-top: 24px;
-            border-top: 1px solid #e2e8f0;
-            color: #a0aec0;
-            font-size: 14px;
-        }
-
-        .footer a {
-            color: #2563EB;
-            text-decoration: none;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Email Verified — Jobsy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --paint: #1e4fd7;
+      --paint-deep: #163db0;
+      --ink: #0a0a0c;
+      --mute: #5c6478;
+      --paper: #f3f4f7;
+      --white: #ffffff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      font-family: Manrope, system-ui, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(ellipse 70% 50% at 85% 10%, rgba(30, 79, 215, 0.28), transparent 55%),
+        radial-gradient(ellipse 50% 40% at 10% 90%, rgba(30, 79, 215, 0.12), transparent 50%),
+        var(--paper);
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+    .card {
+      width: min(100%, 440px);
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(10, 10, 12, 0.08);
+      border-radius: 1.75rem;
+      padding: 2.5rem 2rem;
+      text-align: center;
+      box-shadow: 0 40px 80px -48px rgba(10, 10, 12, 0.45);
+      backdrop-filter: blur(12px);
+      animation: rise 0.55s ease-out;
+    }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .mark {
+      width: 4.5rem;
+      height: 4.5rem;
+      margin: 0 auto 1.25rem;
+      border-radius: 1.25rem;
+      background: var(--paint);
+      color: white;
+      display: grid;
+      place-items: center;
+      font-family: Syne, sans-serif;
+      font-weight: 800;
+      font-size: 2rem;
+      box-shadow: 0 18px 40px -18px rgba(30, 79, 215, 0.85);
+    }
+    .badge {
+      width: 4rem;
+      height: 4rem;
+      margin: 0 auto 1.25rem;
+      border-radius: 999px;
+      background: rgba(30, 79, 215, 0.12);
+      color: var(--paint);
+      display: grid;
+      place-items: center;
+    }
+    h1 {
+      font-family: Syne, sans-serif;
+      font-weight: 800;
+      font-size: clamp(1.75rem, 5vw, 2.15rem);
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+    }
+    p {
+      margin-top: 0.75rem;
+      color: var(--mute);
+      line-height: 1.55;
+      font-size: 0.98rem;
+    }
+    .actions {
+      margin-top: 1.75rem;
+      display: grid;
+      gap: 0.75rem;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      padding: 0.9rem 1.25rem;
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-decoration: none;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+    .btn-primary {
+      background: var(--paint);
+      color: white;
+      box-shadow: 0 16px 36px -18px rgba(30, 79, 215, 0.9);
+    }
+    .btn-primary:hover {
+      background: var(--paint-deep);
+      transform: translateY(-1px);
+    }
+    .btn-ghost {
+      border: 1.5px solid rgba(10, 10, 12, 0.12);
+      color: var(--ink);
+      background: transparent;
+    }
+    .btn-ghost:hover { border-color: rgba(10, 10, 12, 0.28); }
+    .foot {
+      margin-top: 2rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid rgba(10, 10, 12, 0.08);
+      font-size: 0.8rem;
+      color: var(--mute);
+    }
+    .foot a { color: var(--paint); font-weight: 700; text-decoration: none; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="logo">
-            <svg class="checkmark" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="30" cy="30" r="28" fill="none" stroke="white" stroke-width="3"/>
-                <path fill="none" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M15 30 L25 40 L45 20"/>
-            </svg>
-        </div>
-
-        <h1>Email Verified!</h1>
-        <p>Your email has been successfully verified. You can close this page now.</p>
-
-        <div class="footer">
-            <p>Built by <a href="https://futurifydesigns.com" target="_blank">Futurify Designs</a></p>
-            <p style="margin-top: 8px;">© 2026 Jobsy. All rights reserved.</p>
-        </div>
+  <main class="card">
+    <div class="mark" aria-hidden="true">J</div>
+    <div class="badge" aria-hidden="true">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 6 9 17l-5-5" />
+      </svg>
     </div>
-
-    <script>
-        // No scripts needed - just a simple success page
-    </script>
+    <h1>Email verified</h1>
+    <p>
+      Your Jobsy account is confirmed. You can close this tab and open the app — or continue on the web.
+    </p>
+    <div class="actions">
+      <a class="btn btn-primary" href="jobsy://login-callback">Open Jobsy app</a>
+      <a class="btn btn-ghost" href="https://futurifydesigns.github.io/Jobsy/">Stay here</a>
+    </div>
+    <div class="foot">
+      Built by <a href="https://futurifydesigns.com" target="_blank" rel="noreferrer">Futurify Designs</a>
+      · © <span id="y"></span> Jobsy
+    </div>
+  </main>
+  <script>document.getElementById('y').textContent = new Date().getFullYear()</script>
 </body>
 </html>

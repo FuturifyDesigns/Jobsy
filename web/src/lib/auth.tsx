@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from 'react'
 import type { Session, User } from '@supabase/supabase-js'
+import { AUTH_EMAIL_VERIFIED_URL } from './constants'
 import { supabase, type Profile } from './supabase'
 
 type AuthState = {
@@ -112,7 +113,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       password,
       options: {
         data: { full_name: fullName },
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        emailRedirectTo: AUTH_EMAIL_VERIFIED_URL,
       },
     })
     if (error) return { error: error.message }

@@ -5,7 +5,7 @@ import { LandingPage } from './pages/LandingPage'
 import { FeaturesPage } from './pages/FeaturesPage'
 import { HowItWorksPage } from './pages/HowItWorksPage'
 import { PrivacyPage, TermsPage, CookiesPage } from './pages/LegalPages'
-import { SignInPage, SignUpPage } from './pages/AuthPages'
+import { SignInPage, SignUpPage, ForgotPasswordPage } from './pages/AuthPages'
 import { AuthCallbackPage } from './pages/AuthCallbackPage'
 import { AppLayout } from './pages/app/AppLayout'
 import { HomePage, RequireEmployer, RequireWorker } from './pages/app/HomePage'
@@ -33,6 +33,7 @@ export default function App() {
             <Route path="/cookies" element={<CookiesPage />} />
             <Route path="/signin" element={<SignInPage />} />
             <Route path="/signup" element={<SignUpPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/auth/callback" element={<AuthCallbackPage />} />
             <Route path="/app" element={<AppLayout />}>
               <Route index element={<HomePage />} />

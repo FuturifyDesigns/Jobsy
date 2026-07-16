@@ -66,6 +66,7 @@ class AuthService {
     final response = await _client.auth.signUp(
       email: email.trim(),
       password: password,
+      emailRedirectTo: AppConstants.authEmailVerifiedRedirect,
     );
 
     final user = response.user;

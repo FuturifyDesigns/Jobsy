@@ -5,6 +5,8 @@ import { useGSAP } from '@gsap/react'
 import { Logo } from '../components/Logo'
 import { MagneticButton } from '../components/MagneticButton'
 import { useAuth } from '../lib/auth'
+import { AUTH_RESET_PASSWORD_URL } from '../lib/constants'
+import { supabase } from '../lib/supabase'
 import {
   getPasswordStrength,
   validateEmail,
@@ -94,6 +96,11 @@ export function SignInPage() {
           placeholder="Your password"
           error={fieldErrors.password}
         />
+        <p className="text-right text-sm">
+          <Link to="/forgot-password" className="font-semibold text-paint hover:underline">
+            Forgot password?
+          </Link>
+        </p>
         {error && <p className="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>}
         <MagneticButton type="submit" className="w-full" disabled={busy}>
           {busy ? 'Signing in…' : 'Sign In'}
@@ -107,6 +114,84 @@ export function SignInPage() {
           Create an account
         </Link>
       </p>
+    </AuthShell>
+  )
+}
+
+export function ForgotPasswordPage() {
+  const { user, loading } = useAuth()
+  const [email, setEmail] = useState('')
+  const [fieldError, setFieldError] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const [sent, setSent] = useState(false)
+  const [busy, setBusy] = useState(false)
+
+  if (!loading && user) return <Navigate to="/app" replace />
+
+  async function onSubmit(e: FormEvent) {
+    e.preventDefault()
+    setError(null)
+    const eErr = validateEmail(email)
+    if (eErr) {
+      setFieldError(eErr)
+      return
+    }
+    setFieldError('')
+    setBusy(true)
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: AUTH_RESET_PASSWORD_URL,
+    })
+    setBusy(false)
+    if (resetError) {
+      setError(resetError.message)
+      return
+    }
+    setSent(true)
+  }
+
+  return (
+    <AuthShell
+      kicker="Account recovery"
+      title="Reset your password"
+      subtitle="We’ll email you a secure link. You’ll set a new password on our verification page."
+      imageSrc="/auth/sign-in.png"
+      imageAlt="Jobsy — Reset password"
+    >
+      {sent ? (
+        <div className="space-y-4">
+          <p className="rounded-xl bg-paint/8 px-4 py-3 text-sm text-ink">
+            Check <strong>{email.trim()}</strong> for a reset link. It opens on our secure Jobsy page.
+          </p>
+          <Link to="/signin" className="block text-center text-sm font-semibold text-paint hover:underline">
+            Back to sign in
+          </Link>
+        </div>
+      ) : (
+        <form onSubmit={(e) => void onSubmit(e)} className="space-y-4" noValidate>
+          <Field
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(v) => {
+              setEmail(v)
+              if (fieldError) setFieldError('')
+            }}
+            autoComplete="email"
+            placeholder="you@email.com"
+            hint="Same email you use for Jobsy"
+            error={fieldError}
+          />
+          {error && <p className="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>}
+          <MagneticButton type="submit" className="w-full" disabled={busy}>
+            {busy ? 'Sending…' : 'Send reset link'}
+          </MagneticButton>
+          <p className="text-center text-sm text-mute">
+            <Link to="/signin" className="font-semibold text-paint hover:underline">
+              Back to sign in
+            </Link>
+          </p>
+        </form>
+      )}
     </AuthShell>
   )
 }
